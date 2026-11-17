@@ -2,15 +2,9 @@
 
 CourseMate is an interactive Retrieval-Augmented Generation (RAG) web
 application for course materials. It lets students upload documents, ask
-follow-up questions in a ChatGPT-style interface, compare answers with and
+follow-up questions in a conversational interface, compare answers with and
 without RAG, and inspect evaluation results with retrieval relevance,
 hallucination-risk, and latency signals.
-
-Team members:
-
-1. Manish Chowdary Kalluri
-2. Sai Kiran Sikilammetla
-3. Venkata Naga Kiran Katari
 
 ## Project Topic
 
