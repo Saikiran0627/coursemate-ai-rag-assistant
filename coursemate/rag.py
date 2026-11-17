@@ -43,10 +43,22 @@ class CourseMateAssistant:
         chunks = chunk_documents(documents, chunk_size=chunk_size, overlap=overlap)
         return cls(TfidfVectorStore.build(chunks), llm)
 
-    def answer(self, question: str, *, top_k: int = 4, use_rag: bool = True) -> Answer:
+    def answer(
+        self,
+        question: str,
+        *,
+        top_k: int = 4,
+        use_rag: bool = True,
+        chat_history: list[dict[str, str]] | None = None,
+    ) -> Answer:
         retrieved = self.vector_store.search(question, top_k=top_k) if use_rag else []
         context_blocks = [_format_context(result) for result in retrieved]
-        prompt = build_prompt(question, context_blocks)
+        prompt = build_prompt(
+            question,
+            context_blocks,
+            chat_history=chat_history,
+            require_context=use_rag,
+        )
         response = self.llm.generate(prompt)
         return Answer(
             question=question,
@@ -57,12 +69,28 @@ class CourseMateAssistant:
             model_name=self.llm.name,
         )
 
-    def compare(self, question: str, *, top_k: int = 4) -> dict[str, Answer]:
+    def compare(
+        self,
+        question: str,
+        *,
+        top_k: int = 4,
+        chat_history: list[dict[str, str]] | None = None,
+    ) -> dict[str, Answer]:
         """Return no-RAG and RAG answers for the same question."""
 
         return {
-            "no_rag": self.answer(question, top_k=top_k, use_rag=False),
-            "rag": self.answer(question, top_k=top_k, use_rag=True),
+            "no_rag": self.answer(
+                question,
+                top_k=top_k,
+                use_rag=False,
+                chat_history=chat_history,
+            ),
+            "rag": self.answer(
+                question,
+                top_k=top_k,
+                use_rag=True,
+                chat_history=chat_history,
+            ),
         }
 
 

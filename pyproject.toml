@@ -13,7 +13,15 @@ authors = [
   { name = "Sai Kiran Sikilammetla" },
   { name = "Venkata Naga Kiran Katari" }
 ]
-dependencies = []
+dependencies = [
+  "chromadb>=1.3.0",
+  "pandas>=2.3.0",
+  "pypdf>=6.3.0",
+  "python-docx>=1.2.0",
+  "python-pptx>=1.0.0",
+  "sentence-transformers>=5.1.0",
+  "streamlit>=1.51.0"
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0.0"]

@@ -1,9 +1,10 @@
 # CourseMate - AI Course Material Assistant
 
-CourseMate is a final-project implementation of a Retrieval-Augmented
-Generation (RAG) assistant for course materials. It answers questions from local
-lecture notes and policy documents, compares responses with and without RAG, and
-includes an evaluation dataset plus paper/slide sources.
+CourseMate is an interactive Retrieval-Augmented Generation (RAG) web
+application for course materials. It lets students upload documents, ask
+follow-up questions in a ChatGPT-style interface, compare answers with and
+without RAG, and inspect evaluation results with retrieval relevance,
+hallucination-risk, and latency signals.
 
 Team members:
 
@@ -21,29 +22,33 @@ Demonstrated pipeline:
 Documents -> Chunking -> Vector Store -> Retrieval -> LLM -> Response
 ```
 
-The implementation is intentionally lightweight. It uses a pure-Python TF-IDF
-vector store so the project can run without paid APIs or heavyweight services.
-For generation, it supports:
+The web app uses free and open-source technologies:
 
-- `deterministic` - reproducible local generator for tests/evaluation;
-- `ollama` - local open models such as `llama3.2:3b`;
-- `openai` - OpenAI-compatible chat API via environment variables.
+- Streamlit for the browser interface.
+- Sentence Transformers for semantic embeddings.
+- ChromaDB as the local vector database.
+- Ollama for a local LLM such as Llama 3.2 3B.
+- PDF, PPTX, DOCX, TXT, and Markdown upload parsing.
+
+The original TF-IDF implementation remains available for lightweight CLI tests,
+but the web application uses semantic retrieval by default.
 
 ## Repository Structure
 
 ```text
 coursemate/                  Python package
+  app_services.py            web app service layer
   chunking.py                document chunking
   documents.py               course material loading
   evaluation.py              evaluation metrics and result writer
+  ingestion.py               upload parsing for PDF/PPTX/DOCX/TXT/MD
   llm.py                     LLM adapters and prompt template
   rag.py                     RAG orchestration
+  semantic_store.py          Sentence Transformers + ChromaDB retrieval
   vector_store.py            TF-IDF vector store
+app.py                       Streamlit web application
 data/course_materials/       sample course corpus
 data/evaluation/             labeled evaluation questions
-docs/final_paper.md          technical paper source
-docs/presentation_slides.md  slide deck source
-scripts/build_artifacts.py   standard-library PDF generator
 tests/                       unit tests
 ```
 
@@ -56,6 +61,36 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 ```
+
+## Run the Web App
+
+Start Ollama and install the preferred local model:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+Launch CourseMate:
+
+```bash
+streamlit run app.py
+```
+
+In the browser:
+
+1. Confirm Ollama is reachable and `llama3.2:3b` is available.
+2. Upload PDF, PPTX, DOCX, TXT, or Markdown course materials.
+3. Click **Build / refresh semantic index**.
+4. Ask questions in the chat tab.
+5. Use **RAG Comparison** to view no-RAG and RAG answers side by side.
+6. Use **Evaluation** to inspect test cases, answer quality, source relevance,
+   hallucination-risk analysis, and response times.
+
+If Ollama is unavailable, deterministic demo mode can be used to verify
+retrieval and UI behavior, but it is not a substitute for testing real local LLM
+responses.
+
+## CLI Utilities
 
 Ask a question with retrieval:
 
@@ -80,14 +115,6 @@ Run tests:
 ```bash
 pytest
 ```
-
-Build PDF artifacts:
-
-```bash
-python3 scripts/build_artifacts.py
-```
-
-Generated files are written to `artifacts/`.
 
 ## Using a Local Open LLM with Ollama
 

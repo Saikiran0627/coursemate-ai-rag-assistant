@@ -87,6 +87,9 @@ class OllamaLLM:
             ) from exc
         return body.get("response", "").strip()
 
+    def is_available(self) -> bool:
+        return self.model in list_ollama_models(self.base_url)
+
 
 @dataclass
 class OpenAICompatibleLLM:
@@ -138,15 +141,75 @@ def build_llm(kind: str, *, model: str | None = None) -> LanguageModel:
     raise ValueError(f"Unknown LLM backend: {kind}")
 
 
-def build_prompt(question: str, context_blocks: list[str]) -> str:
+def list_ollama_models(base_url: str = "http://localhost:11434") -> list[str]:
+    """Return locally available Ollama model names, or an empty list if offline."""
+
+    url = f"{base_url.rstrip('/')}/api/tags"
+    request = urllib.request.Request(url, method="GET")
+    try:
+        with urllib.request.urlopen(request, timeout=5) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        return []
+    return [item.get("name", "") for item in payload.get("models", []) if item.get("name")]
+
+
+def ollama_generate_smoke_test(
+    *,
+    model: str = "llama3.2:3b",
+    base_url: str = "http://localhost:11434",
+) -> tuple[bool, str]:
+    """Call Ollama with a tiny prompt to verify real model responses."""
+
+    llm = OllamaLLM(model=model, base_url=base_url)
+    try:
+        response = llm.generate("Reply with exactly: CourseMate ready")
+    except Exception as exc:
+        return False, str(exc)
+    return bool(response.strip()), response.strip()
+
+
+def build_prompt(
+    question: str,
+    context_blocks: list[str],
+    *,
+    chat_history: list[dict[str, str]] | None = None,
+    require_context: bool = True,
+) -> str:
     """Create the prompt used by both RAG and no-RAG modes."""
 
     context = "\n\n".join(context_blocks).strip()
+    history = _format_history(chat_history or [])
+    if not require_context:
+        return textwrap.dedent(
+            f"""
+            You are CourseMate, an AI course assistant.
+            Answer the user from your general knowledge because no retrieval
+            context is being supplied in this comparison mode. Be transparent
+            that the answer is not grounded in uploaded course materials.
+
+            CONVERSATION HISTORY:
+            {history}
+
+            QUESTION:
+            {question}
+
+            RESPONSE REQUIREMENTS:
+            - Give a concise, helpful answer.
+            - Do not cite uploaded course sources because none were retrieved.
+            - If the question depends on specific course materials, say that
+              the no-RAG answer may be unreliable.
+            """
+        ).strip()
+
     return textwrap.dedent(
         f"""
         You are CourseMate, an AI course-material assistant.
         Answer only from the provided course context. If the context is missing
         or insufficient, say that you do not have enough evidence.
+
+        CONVERSATION HISTORY:
+        {history}
 
         CONTEXT:
         {context}
@@ -156,10 +219,23 @@ def build_prompt(question: str, context_blocks: list[str]) -> str:
 
         RESPONSE REQUIREMENTS:
         - Give a concise answer in student-friendly language.
-        - Cite the course source titles when context is available.
+        - Cite the course source titles that support the answer.
+        - End with a line formatted as: Sources: <source title 1>; <source title 2>
         - Do not invent policies, deadlines, formulas, or definitions.
         """
     ).strip()
+
+
+def _format_history(chat_history: list[dict[str, str]]) -> str:
+    if not chat_history:
+        return "No previous conversation."
+    turns = []
+    for item in chat_history[-8:]:
+        role = item.get("role", "user").title()
+        content = item.get("content", "").strip()
+        if content:
+            turns.append(f"{role}: {content}")
+    return "\n".join(turns) if turns else "No previous conversation."
 
 
 def _extract_section(prompt: str, marker: str) -> str:
