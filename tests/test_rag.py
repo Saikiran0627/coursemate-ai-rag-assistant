@@ -104,6 +104,31 @@ def test_follow_up_question_uses_previous_user_turn_for_retrieval():
     assert any("Retrieval-Augmented Generation" in item.chunk.title for item in answer.retrieved)
 
 
+def test_follow_up_skips_previous_unsupported_turn():
+    assistant = CourseMateAssistant.from_directory(
+        ROOT / "data" / "course_materials",
+        DeterministicCourseLLM(),
+    )
+
+    answer = assistant.answer(
+        "Why is it useful for course assistants?",
+        use_rag=True,
+        chat_history=[
+            {"role": "user", "content": "What are the main steps in a RAG pipeline?"},
+            {"role": "assistant", "content": "It uses retrieved context.", "evidence_status": "sufficient"},
+            {"role": "user", "content": "What is tomorrow's cafeteria menu?"},
+            {
+                "role": "assistant",
+                "content": "I could not find enough relevant evidence.",
+                "evidence_status": "insufficient",
+            },
+        ],
+    )
+
+    assert "cafeteria" not in answer.retrieval_query.lower()
+    assert "rag pipeline" in answer.retrieval_query.lower()
+
+
 def test_multi_document_question_can_retrieve_multiple_sources():
     assistant = CourseMateAssistant.from_directory(
         ROOT / "data" / "course_materials",

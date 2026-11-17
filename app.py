@@ -25,6 +25,7 @@ from coursemate.llm import (
     list_ollama_models,
     ollama_generate_smoke_test,
 )
+from coursemate.rag import SEMANTIC_RELEVANCE_THRESHOLD
 
 
 APP_TITLE = "CourseMate"
@@ -120,7 +121,7 @@ def render_sidebar():
             "Evidence relevance threshold",
             min_value=0.0,
             max_value=0.8,
-            value=0.30,
+            value=SEMANTIC_RELEVANCE_THRESHOLD,
             step=0.01,
             help=(
                 "Chunks below this calibrated similarity score are not used as evidence. "
@@ -136,6 +137,9 @@ def render_sidebar():
         chunk_count = len(st.session_state["chunks"])
         st.metric("Documents", doc_count)
         st.metric("Indexed chunks", chunk_count)
+        assistant = st.session_state.get("assistant")
+        if assistant is not None:
+            st.caption(f"Retrieval backend: `{assistant.retrieval_backend}`")
         if st.session_state["assistant"] is None:
             st.info("Add documents and build the semantic index before chatting.")
         return llm
@@ -233,7 +237,11 @@ def render_chat_tab() -> None:
         st.markdown(question)
 
     history = [
-        {"role": item["role"], "content": item["content"]}
+        {
+            "role": item["role"],
+            "content": item["content"],
+            "evidence_status": item.get("evidence_status", ""),
+        }
         for item in st.session_state["messages"][:-1]
         if item["role"] in {"user", "assistant"}
     ]
@@ -261,6 +269,7 @@ def render_chat_tab() -> None:
             "role": "assistant",
             "content": timed.answer.answer,
             "sources": timed.answer.retrieved,
+            "evidence_status": timed.answer.evidence_status,
         }
     )
 
@@ -274,7 +283,11 @@ def render_comparison_tab() -> None:
     question = st.text_area("Comparison question", height=90)
     if st.button("Compare answers", type="primary") and question.strip():
         history = [
-            {"role": item["role"], "content": item["content"]}
+            {
+                "role": item["role"],
+                "content": item["content"],
+                "evidence_status": item.get("evidence_status", ""),
+            }
             for item in st.session_state["messages"]
             if item["role"] in {"user", "assistant"}
         ]

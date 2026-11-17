@@ -13,7 +13,9 @@ from coursemate.llm import LanguageModel, build_prompt
 from coursemate.vector_store import SearchResult, TfidfVectorStore
 
 
-DEFAULT_RELEVANCE_THRESHOLD = 0.18
+SEMANTIC_RELEVANCE_THRESHOLD = 0.30
+TFIDF_RELEVANCE_THRESHOLD = 0.18
+DEFAULT_MAX_EVIDENCE_CHUNKS = 3
 
 
 @dataclass(frozen=True)
@@ -28,6 +30,7 @@ class Answer:
     model_name: str
     retrieval_query: str = ""
     evidence_status: str = "not_checked"
+    retrieval_backend: str = "unknown"
 
 
 class CourseMateAssistant:
@@ -38,11 +41,14 @@ class CourseMateAssistant:
         vector_store: TfidfVectorStore,
         llm: LanguageModel,
         *,
-        relevance_threshold: float = DEFAULT_RELEVANCE_THRESHOLD,
+        relevance_threshold: float = SEMANTIC_RELEVANCE_THRESHOLD,
+        max_evidence_chunks: int = DEFAULT_MAX_EVIDENCE_CHUNKS,
     ):
         self.vector_store = vector_store
         self.llm = llm
         self.relevance_threshold = relevance_threshold
+        self.max_evidence_chunks = max_evidence_chunks
+        self.retrieval_backend = getattr(vector_store, "backend_name", "unknown")
 
     @classmethod
     def from_directory(
@@ -55,7 +61,11 @@ class CourseMateAssistant:
     ) -> "CourseMateAssistant":
         documents = load_documents(data_dir)
         chunks = chunk_documents(documents, chunk_size=chunk_size, overlap=overlap)
-        return cls(TfidfVectorStore.build(chunks), llm)
+        return cls(
+            TfidfVectorStore.build(chunks),
+            llm,
+            relevance_threshold=TFIDF_RELEVANCE_THRESHOLD,
+        )
 
     def answer(
         self,
@@ -77,6 +87,7 @@ class CourseMateAssistant:
                 model_name="coursemate-intent-handler",
                 retrieval_query="",
                 evidence_status="not_needed",
+                retrieval_backend=self.retrieval_backend,
             )
 
         retrieval_query = build_retrieval_query(question, chat_history)
@@ -86,6 +97,7 @@ class CourseMateAssistant:
                 retrieved,
                 query=retrieval_query,
                 threshold=self.relevance_threshold if relevance_threshold is None else relevance_threshold,
+                max_chunks=self.max_evidence_chunks,
             )
             if not retrieved:
                 return Answer(
@@ -101,6 +113,7 @@ class CourseMateAssistant:
                     model_name=self.llm.name,
                     retrieval_query=retrieval_query,
                     evidence_status="insufficient",
+                    retrieval_backend=self.retrieval_backend,
                 )
         context_blocks = [_format_context(result) for result in retrieved]
         prompt = build_prompt(
@@ -119,6 +132,7 @@ class CourseMateAssistant:
             model_name=self.llm.name,
             retrieval_query=retrieval_query if use_rag else "",
             evidence_status="sufficient" if use_rag else "not_checked",
+            retrieval_backend=self.retrieval_backend,
         )
 
     def compare(
@@ -156,7 +170,13 @@ def _format_context(result: SearchResult) -> str:
     )
 
 
-def _filter_relevant(results: list[SearchResult], *, query: str, threshold: float) -> list[SearchResult]:
+def _filter_relevant(
+    results: list[SearchResult],
+    *,
+    query: str,
+    threshold: float,
+    max_chunks: int,
+) -> list[SearchResult]:
     if not results:
         return []
     top_score = results[0].score
@@ -170,7 +190,7 @@ def _filter_relevant(results: list[SearchResult], *, query: str, threshold: floa
         # chunks need lexical support so citations stay tied to the user's question.
         if result.score >= threshold + 0.20 or _lexical_overlap(query, result.chunk.text) >= 2:
             filtered.append(result)
-    return filtered
+    return filtered[:max_chunks]
 
 
 def _chunk_location(text: str) -> str:

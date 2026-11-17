@@ -11,7 +11,7 @@ from coursemate.documents import Document
 from coursemate.evaluation import EvaluationCase, EvaluationResult
 from coursemate.ingestion import UploadedDocument
 from coursemate.llm import LanguageModel
-from coursemate.rag import Answer, CourseMateAssistant
+from coursemate.rag import Answer, CourseMateAssistant, SEMANTIC_RELEVANCE_THRESHOLD
 from coursemate.semantic_store import ChromaSemanticVectorStore, DEFAULT_EMBEDDING_MODEL
 
 
@@ -36,7 +36,7 @@ def build_semantic_assistant(
     embedding_model: str = DEFAULT_EMBEDDING_MODEL,
     chunk_size: int = 160,
     overlap: int = 35,
-    relevance_threshold: float = 0.30,
+    relevance_threshold: float = SEMANTIC_RELEVANCE_THRESHOLD,
 ) -> CorpusBuildResult:
     """Build a Chroma-backed assistant from uploaded documents."""
 

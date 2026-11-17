@@ -46,12 +46,30 @@ def build_retrieval_query(
     if not chat_history or not _FOLLOW_UP_RE.search(cleaned):
         return cleaned
 
-    previous_user_turns = [
-        item.get("content", "").strip()
-        for item in chat_history
-        if item.get("role") == "user" and item.get("content", "").strip()
-    ]
+    previous_user_turns = _supported_previous_user_turns(chat_history)
     if not previous_user_turns:
         return cleaned
 
     return f"{previous_user_turns[-1]} Follow-up: {cleaned}"
+
+
+def _supported_previous_user_turns(chat_history: list[dict[str, str]]) -> list[str]:
+    supported_turns: list[str] = []
+    latest_user: str | None = None
+    for item in chat_history:
+        role = item.get("role")
+        content = item.get("content", "").strip()
+        if role == "user" and content:
+            latest_user = content
+        elif role == "assistant" and latest_user:
+            evidence_status = item.get("evidence_status", "")
+            unsupported = (
+                evidence_status == "insufficient"
+                or "could not find enough relevant evidence" in content.lower()
+            )
+            if not unsupported:
+                supported_turns.append(latest_user)
+            latest_user = None
+    if latest_user:
+        supported_turns.append(latest_user)
+    return supported_turns
