@@ -218,15 +218,32 @@ def _build_index_with_retry(docs, llm, persist_dir: Path):
             relevance_threshold=st.session_state["relevance_threshold"],
         )
     except Exception as exc:
-        if "no such table: tenants" not in str(exc).lower():
+        message = str(exc).lower()
+        recoverable_chroma_error = (
+            "no such table: tenants" in message
+            or "readonly database" in message
+            or "attempt to write a readonly database" in message
+        )
+        if not recoverable_chroma_error:
             raise
-        shutil.rmtree(persist_dir, ignore_errors=True)
+        _reset_index_state(delete_store=True)
+        persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
         return build_semantic_assistant(
             docs,
             llm,
             persist_dir=persist_dir,
             relevance_threshold=st.session_state["relevance_threshold"],
         )
+
+
+def _reset_index_state(*, delete_store: bool) -> None:
+    if delete_store:
+        persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
+        shutil.rmtree(persist_dir, ignore_errors=True)
+    st.session_state["assistant"] = None
+    st.session_state["chunks"] = []
+    st.session_state["last_index_signature"] = None
+    st.session_state["session_id"] = uuid.uuid4().hex
 
 
 def render_chat_tab() -> None:
@@ -419,14 +436,12 @@ def render_documents_tab() -> None:
             st.text_area("Preview", item.document.text[:3000], height=180, key=f"preview-{index}")
             if st.button("Remove document", key=f"remove-{index}"):
                 st.session_state["uploaded_docs"].pop(index)
-                st.session_state["assistant"] = None
-                st.session_state["chunks"] = []
+                _reset_index_state(delete_store=True)
                 st.rerun()
 
     if st.button("Clear all documents"):
         st.session_state["uploaded_docs"] = []
-        st.session_state["assistant"] = None
-        st.session_state["chunks"] = []
+        _reset_index_state(delete_store=True)
         st.session_state["messages"] = []
         st.rerun()
 
