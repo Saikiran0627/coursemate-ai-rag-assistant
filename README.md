@@ -77,7 +77,7 @@ In the browser:
 1. Confirm Ollama is reachable and `llama3.2:3b` is available.
 2. Upload PDF, PPTX, DOCX, TXT, or Markdown course materials.
 3. Click **Build / refresh semantic index**.
-4. Ask questions in the **AI Chat** page.
+4. Ask questions in the chat tab.
 5. Use **RAG Comparison** to view no-RAG and RAG answers side by side.
 6. Use **Evaluation** to inspect test cases, answer quality, source relevance,
    hallucination-risk analysis, and response times.
