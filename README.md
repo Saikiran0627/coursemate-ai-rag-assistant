@@ -2,15 +2,9 @@
 
 CourseMate is an interactive Retrieval-Augmented Generation (RAG) web
 application for course materials. It lets students upload documents, ask
-follow-up questions in a ChatGPT-style interface, compare answers with and
+follow-up questions in a conversational interface, compare answers with and
 without RAG, and inspect evaluation results with retrieval relevance,
 hallucination-risk, and latency signals.
-
-Team members:
-
-1. Manish Chowdary Kalluri
-2. Sai Kiran Sikilammetla
-3. Venkata Naga Kiran Katari
 
 ## Project Topic
 
@@ -83,7 +77,7 @@ In the browser:
 1. Confirm Ollama is reachable and `llama3.2:3b` is available.
 2. Upload PDF, PPTX, DOCX, TXT, or Markdown course materials.
 3. Click **Build / refresh semantic index**.
-4. Ask questions in the chat tab.
+4. Ask questions in the **AI Chat** page.
 5. Use **RAG Comparison** to view no-RAG and RAG answers side by side.
 6. Use **Evaluation** to inspect test cases, answer quality, source relevance,
    hallucination-risk analysis, and response times.
