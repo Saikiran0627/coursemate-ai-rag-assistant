@@ -32,6 +32,7 @@ from coursemate.rag import SEMANTIC_RELEVANCE_THRESHOLD
 APP_TITLE = "CourseMate"
 DEFAULT_MODEL = "llama3.2:3b"
 DEFAULT_EVAL_FILE = Path("data/evaluation/questions.jsonl")
+REALISTIC_EVAL_FILE = Path("data/evaluation/realistic_questions.jsonl")
 DEFAULT_SAMPLE_DIR = Path("data/course_materials")
 
 
@@ -366,7 +367,20 @@ def render_evaluation_tab() -> None:
         return
 
     st.write("Evaluate answer quality, retrieval relevance, hallucination risk, and latency.")
-    use_default_cases = st.checkbox("Use built-in CourseMate test cases", value=True)
+    eval_dataset = st.selectbox(
+        "Evaluation dataset",
+        [
+            "Original quick checks",
+            "Realistic 30-question course evaluation",
+        ],
+        index=1,
+    )
+    selected_eval_file = (
+        REALISTIC_EVAL_FILE
+        if eval_dataset == "Realistic 30-question course evaluation"
+        else DEFAULT_EVAL_FILE
+    )
+    use_default_cases = st.checkbox("Use selected built-in test cases", value=True)
     custom_question = st.text_input("Optional custom test question")
     custom_keywords = st.text_input("Expected keywords for custom question, comma-separated")
     custom_sources = st.text_input("Expected source titles for custom question, comma-separated")
@@ -374,7 +388,7 @@ def render_evaluation_tab() -> None:
     if st.button("Run evaluation", type="primary"):
         cases: list[EvaluationCase] = []
         if use_default_cases:
-            cases.extend(load_cases(DEFAULT_EVAL_FILE))
+            cases.extend(load_cases(selected_eval_file))
         if custom_question.strip():
             cases.append(
                 EvaluationCase(
@@ -404,20 +418,28 @@ def render_evaluation_tab() -> None:
         st.dataframe(pd.DataFrame(summary).T, use_container_width=True)
 
         rows = []
+        case_lookup = {case.id: case for case in cases}
         for result in results:
+            case = case_lookup.get(result.case_id)
             rows.append(
                 {
                     "case_id": result.case_id,
+                    "category": case.category if case else "",
                     "mode": result.mode,
                     "keyword_recall": result.keyword_recall,
                     "source_hit": result.source_hit,
                     "latency_seconds": result.latency_seconds,
                     "retrieved_sources": ", ".join(result.retrieved_sources),
                     "hallucination_risk": hallucination_risk(result),
+                    "reference_answer": case.reference_answer if case else "",
                     "answer": result.answer,
                 }
             )
         st.subheader("Detailed Results")
+        st.caption(
+            "Automated keyword/source metrics are estimates. Keep them separate from "
+            "human review of faithfulness, citation support, and usefulness."
+        )
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
         st.subheader("Latency")
         st.bar_chart(pd.DataFrame(rows), x="case_id", y="latency_seconds", color="mode")

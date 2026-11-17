@@ -13,7 +13,7 @@ from coursemate.llm import LanguageModel, build_prompt
 from coursemate.vector_store import SearchResult, TfidfVectorStore
 
 
-SEMANTIC_RELEVANCE_THRESHOLD = 0.30
+SEMANTIC_RELEVANCE_THRESHOLD = 0.29
 TFIDF_RELEVANCE_THRESHOLD = 0.18
 DEFAULT_MAX_EVIDENCE_CHUNKS = 3
 

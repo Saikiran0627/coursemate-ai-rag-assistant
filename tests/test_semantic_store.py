@@ -3,7 +3,8 @@ from pathlib import Path
 
 from coursemate.chunking import chunk_documents
 from coursemate.app_services import build_semantic_assistant
-from coursemate.documents import Document
+from coursemate.documents import Document, load_documents
+from coursemate.evaluation import load_cases
 from coursemate.ingestion import UploadedDocument
 from coursemate.llm import DeterministicCourseLLM
 from coursemate.semantic_store import ChromaSemanticVectorStore, SemanticStoreError
@@ -89,3 +90,52 @@ def test_semantic_app_backend_uses_chroma_thresholding(tmp_path):
     unanswerable = result.assistant.answer("What is tomorrow's cafeteria menu?", use_rag=True)
     assert unanswerable.evidence_status == "insufficient"
     assert unanswerable.retrieved == []
+
+
+def test_realistic_evaluation_dataset_has_required_coverage():
+    cases = load_cases("data/evaluation/realistic_questions.jsonl")
+
+    assert len(cases) == 30
+    categories = {case.category for case in cases}
+    assert {
+        "factual",
+        "conceptual",
+        "paraphrased",
+        "multi_document",
+        "follow_up",
+        "unanswerable",
+    }.issubset(categories)
+    assert all(case.reference_answer for case in cases)
+
+
+def test_realistic_course_materials_retrieve_across_documents(tmp_path):
+    documents = load_documents("data/realistic_course_materials")
+    uploads = [
+        UploadedDocument(
+            filename=Path(document.source_path).name,
+            content_hash=document.doc_id,
+            document=document,
+        )
+        for document in documents
+    ]
+
+    try:
+        result = build_semantic_assistant(
+            uploads,
+            DeterministicCourseLLM(),
+            persist_dir=tmp_path,
+            relevance_threshold=0.30,
+        )
+    except SemanticStoreError as exc:
+        pytest.skip(str(exc))
+
+    answer = result.assistant.answer(
+        "How do semantic embeddings and RAG work together in CourseMate?",
+        use_rag=True,
+        top_k=6,
+    )
+    titles = {item.chunk.title for item in answer.retrieved}
+
+    assert answer.evidence_status == "sufficient"
+    assert "Embedding and Vector Store Lab" in titles
+    assert "Lecture 2: Retrieval-Augmented Generation" in titles

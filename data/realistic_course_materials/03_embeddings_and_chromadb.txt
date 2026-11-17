@@ -1,0 +1,30 @@
+# Embedding and Vector Store Lab
+
+Page 1
+
+Semantic embeddings represent text as numerical vectors. Texts with similar
+meaning should have vectors that are close together even when they use different
+words. Sentence Transformers is an open-source library that can compute
+sentence and passage embeddings for local applications.
+
+Page 2
+
+ChromaDB is a local vector database that stores embeddings, source metadata, and
+the original document chunks. A CourseMate collection should preserve document
+titles, source file names, chunk identifiers, and page or slide labels when
+available. This metadata supports citations and allows users to inspect the
+retrieved evidence.
+
+Page 3
+
+Similarity thresholds should be calibrated with real retrieval scores from the
+selected embedding model and vector database. A threshold that works for TF-IDF
+scores may not work for semantic cosine similarity. CourseMate uses semantic
+retrieval as the default and keeps TF-IDF only as a lightweight fallback.
+
+Page 4
+
+Embedding models improve paraphrase retrieval. For example, the question "How
+does the assistant find relevant notes?" should retrieve passages about vector
+search and semantic embeddings even if the question does not use the exact word
+"embedding."

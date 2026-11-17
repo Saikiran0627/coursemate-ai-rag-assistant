@@ -17,6 +17,8 @@ class EvaluationCase:
     question: str
     expected_keywords: list[str]
     expected_sources: list[str]
+    reference_answer: str = ""
+    category: str = "general"
     notes: str = ""
 
 
