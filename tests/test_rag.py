@@ -213,5 +213,6 @@ def test_evaluation_marks_no_rag_source_hit_not_applicable_and_scores_refusal():
 
     assert no_rag.source_hit is None
     assert no_rag.source_hit_applicable is False
-    assert rag.source_hit_applicable is True
+    assert rag.source_hit is None
+    assert rag.source_hit_applicable is False
     assert rag.correct_refusal is True

@@ -77,10 +77,10 @@ def evaluate(
                     keyword_recall=_keyword_recall(answer.answer, case.expected_keywords),
                     source_hit=(
                         _source_hit(retrieved_sources, case.expected_sources)
-                        if answer.mode == "rag"
+                        if answer.mode == "rag" and case.expected_sources
                         else None
                     ),
-                    source_hit_applicable=answer.mode == "rag",
+                    source_hit_applicable=answer.mode == "rag" and bool(case.expected_sources),
                     retrieved_sources=retrieved_sources,
                     latency_seconds=round(latency, 4),
                     correct_refusal=(

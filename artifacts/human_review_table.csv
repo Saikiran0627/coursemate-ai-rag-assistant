@@ -1,0 +1,222 @@
+question_id,priority_review,question,reference_answer,actual_rag_answer,retrieved_sources,factual_correctness,citation_support,answer_completeness,reviewer_notes
+rq01,,What are the six stages in a typical RAG pipeline?,"A typical RAG pipeline collects documents, chunks them, computes semantic embeddings, stores vectors, retrieves relevant chunks, and generates an answer with source citations.","Here are the six stages in a typical RAG pipeline:
+
+1. Collect documents: Gathering relevant documents from a document collection.
+2. Split documents into overlapping chunks: Breaking down documents into smaller, overlapping sections to preserve meaning across section boundaries.
+3. Compute semantic embeddings: Calculating vector representations of the document chunks to capture their semantic meaning.
+4. Store vectors in a vector database: Storing the computed embeddings in a database for efficient retrieval.
+5. Retrieve the most relevant chunks for a question: Finding the most relevant document chunks that match the query.
+6. Generate an answer with source citations: Using the retrieved chunks to generate an answer and include source citations.
+
+Sources: Page 2; Page 3",Lecture 2: Retrieval-Augmented Generation,,,,
+rq02,,Why is RAG useful for course assistants?,"RAG is useful because course materials change during a semester and retrieval lets the assistant use current syllabi, slides, assignments, and policies without retraining.","RAG is useful for course assistants because it allows them to use current course materials without retraining the model, which changes frequently during a semester. This means the assistant can retrieve relevant passages from the document collection and then generate answers based on that context, rather than relying solely on its training data.
+
+Sources: Lecture 2: Retrieval-Augmented Generation; Lecture 5: Responsible AI and Security",Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security,,,,
+rq03,,What should CourseMate do when no sufficiently relevant chunks are found?,It should say that it does not have enough evidence in the uploaded materials rather than inventing an answer.,"When no sufficiently relevant chunks are found, CourseMate should say that it does not have enough evidence in the uploaded materials.
+
+Sources: Lecture 2: Retrieval-Augmented Generation; chunk=chunk-0004; location=Page 4; score=0.511",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 2: Retrieval-Augmented Generation; Lecture 5: Responsible AI and Security,,,,
+rq04,,What are semantic embeddings?,Semantic embeddings are numerical vector representations of text where texts with similar meaning should be close together.,"Semantic embeddings represent text as numerical vectors. These vectors capture the meaning of the text, allowing similar texts to have vectors that are close together, even when using different words. This means that semantic embeddings can help identify the underlying meaning of text, rather than just its literal words.
+
+In other words, semantic embeddings try to preserve the semantic relationships between words, so that texts with similar meaning can be represented in a way that is close to each other in the vector space.
+
+Sources: 
+Embedding and Vector Store Lab; Page 1",Embedding and Vector Store Lab,,,,
+rq05,,What metadata should a CourseMate ChromaDB collection preserve?,"It should preserve document titles, source file names, chunk identifiers, and page or slide labels when available.","A CourseMate ChromaDB collection should preserve the following metadata:
+
+• Document titles
+• Source file names
+• Chunk identifiers
+• Page or slide labels when available
+
+These metadata support citations and allow users to inspect the retrieved evidence.
+
+Sources: Embedding and Vector Store Lab; ChromaDB; Lecture 2: Retrieval-Augmented Generation",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 2: Retrieval-Augmented Generation; Lecture 5: Responsible AI and Security,,,,
+rq06,,Why should semantic thresholds be calibrated separately from TF-IDF thresholds?,"Semantic cosine similarity scores and TF-IDF scores have different scales, so a threshold that works for TF-IDF may not work for the semantic embedding model and vector database.","Here's why semantic thresholds should be calibrated separately from TF-IDF thresholds:
+
+• Semantic similarity thresholds should be calibrated based on the retrieval scores from the selected embedding model, as it measures the closeness of vectors representing similar texts.
+• TF-IDF thresholds, on the other hand, are based on the traditional text similarity metric, which may not capture the nuances of semantic similarity.
+• A threshold that works for TF-IDF may not work for semantic cosine similarity, as the two metrics have different strengths and weaknesses in capturing text meaning.
+
+Sources: 
+Page 3; Page 4",Embedding and Vector Store Lab,,,,
+rq07,YES,How does the assistant find notes that mean the same thing as my question even if the words differ?,It uses semantic embeddings and vector search so paraphrased questions can retrieve passages with similar meaning even when exact words differ.,"Here's a concise answer to your question:
+
+To find notes that mean the same thing as your question even if the words differ, the assistant uses semantic vector database and semantic retrieval. Here's how it works:
+
+• The assistant computes semantic embeddings for the question and the retrieved chunks.
+• The semantic embeddings are compared to determine how similar they are in meaning.
+• If the similarity is above a certain threshold, the assistant considers the retrieved chunks as relevant evidence.
+• The assistant then uses the relevant chunks to generate an answer.
+
+Sources: Embedding and Vector Store Lab; Retrieval-Augmented Generation",Embedding and Vector Store Lab; Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis,,,,PRIORITY REVIEW
+rq08,,What baseline should RAG evaluation compare against?,It should compare against the same model answering without retrieved context.,"To evaluate the effectiveness of RAG, the baseline should compare against a system that uses the same model without retrieved context. This isolates the value of retrieval and allows for a fair comparison.
+
+Sources: Lecture 4: Evaluation and Failure Analysis; Lecture 2: Retrieval-Augmented Generation",Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis,,,,
+rq09,,Which measurements are useful for evaluating CourseMate?,"Useful measurements include answer correctness, retrieval relevance, citation accuracy, hallucination rate, and response latency.","Here are the useful measurements for evaluating CourseMate:
+
+• Answer correctness
+• Retrieval relevance
+• Citation accuracy
+• Hallucination rate
+• Response latency
+
+These metrics should be used to evaluate the performance of CourseMate, as they provide a comprehensive understanding of its strengths and weaknesses.
+
+Sources: Lecture 4: Evaluation and Failure Analysis; Slide 1",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis,,,,
+rq10,,Why should automated metrics be kept separate from human review?,"Automated metrics are estimates and cannot fully judge faithfulness or usefulness, so human review should remain separate.","Automated metrics should be kept separate from human review because they cannot fully judge faithfulness or usefulness. Here's why:
+
+• They can't capture nuances: Automated metrics rely on estimates, such as keyword recall and source hit rate, which might not accurately reflect the complexity of human judgment.
+• They can be biased: Metrics like latency measures response time, which might prioritize speed over accuracy, can lead to biased evaluations.
+• They lack contextual understanding: Automated metrics don't consider the context of the question or the material, which can lead to misinterpretation.
+
+Sources: Slide 2; Slide 3",Lecture 4: Evaluation and Failure Analysis,,,,
+rq11,,What is a hallucination in this course assistant context?,A hallucination is when the assistant states information that is not supported by the uploaded materials.,"A hallucination occurs when the assistant states information that is not supported by the uploaded materials.
+
+Here's how it can happen:
+• The assistant may provide an answer that includes information not present in the uploaded materials.
+• This can happen when the assistant is asked a question that requires information not covered in the course materials.
+• In such cases, the safest behavior is to say that the material does not contain enough evidence.
+
+Sources: 
+Lecture 4: Evaluation and Failure Analysis; 
+Lecture 3: Retrieval-Augmented Generation",CourseMate Sample Course: Syllabus and Project Policy; Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security,,,,
+rq12,,What categories of questions should the evaluation set include?,"It should include factual, conceptual, paraphrased, multi-document, follow-up, and unanswerable questions.","The evaluation set should include the following categories of questions:
+
+• Factual questions
+• Conceptual questions
+• Paraphrased questions
+• Multi-document questions
+• Follow-up questions
+• Unanswerable questions
+
+Sources: Lecture 4: Evaluation and Failure Analysis; chunk=chunk-0008; location=Slide 4",Lecture 4: Evaluation and Failure Analysis,,,,
+rq13,,What does the final project require?,"The project requires a working LLM-powered application, source code, documentation, evaluation methodology, multiple test cases, analysis of successes and failures, limitations, and responsible AI considerations.","The final project requires a working LLM-powered application, including:
+
+• Source code
+• Documentation
+• An evaluation methodology
+• Multiple test cases
+• A discussion of successful and failed responses
+• Limitations
+• Responsible AI considerations
+
+It should demonstrate more than a single prompt to a model. Students must explain why their system works, when it fails, and how they evaluated it.
+
+Sources: Syllabus and Project Policy; chunk=chunk-0001; location=Page 2",CourseMate Sample Course: Syllabus and Project Policy,,,,
+rq14,,Why is CourseMate expected to compare retrieval and no-retrieval answers?,The comparison shows the value of retrieval by contrasting grounded answers against answers from the same model without retrieved context.,"CourseMate is expected to compare retrieval and no-retrieval answers to evaluate the effectiveness of its retrieval system. This comparison helps to isolate the value of retrieval in the RAG (Retrieval-Augmented Generation) system.
+
+Here are the reasons why this comparison is important:
+
+• **Isolate the value of retrieval**: By comparing retrieval and no-retrieval answers, the system can determine how much the retrieved context contributes to the accuracy and quality of the generated answer.
+• **Evaluate the RAG system**: This comparison allows the system to assess its overall performance and identify areas for improvement.
+• **Measure the impact of retrieval**: By comparing retrieval and no-retrieval answers, the system can quantify the impact of retrieval on the answer's correctness, relevance, and faithfulness.
+
+Sources: Lecture 2: Retrieval-Augmented Generation; chunk=chunk-0004; location=Page 4; score=0.603",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis,,,,
+rq15,,How do the project policy and evaluation lecture both describe successful CourseMate evaluation?,"The policy requires evaluation methodology, test cases, success and failure analysis, and limitations; the evaluation lecture adds metrics such as correctness, retrieval relevance, citation accuracy, hallucination rate, latency, and human review.","Here's a concise answer to the question:
+
+Successful CourseMate evaluation involves comparing the complete RAG system against a baseline that uses the same model without retrieved context. This isolates the value of retrieval. Key aspects of successful evaluation include:
+
+• Answer correctness
+• Retrieval relevance
+• Citation accuracy
+• Hallucination rate
+• Response latency
+
+These metrics should be kept separate from human review because they cannot fully judge faithfulness or usefulness.
+
+Sources: Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security",CourseMate Sample Course: Syllabus and Project Policy; Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security,,,,
+rq16,,How do semantic embeddings and RAG work together in CourseMate?,"Semantic embeddings represent chunks as vectors, ChromaDB stores them, and RAG retrieves relevant chunks before the LLM generates an answer with citations.","Here's how semantic embeddings and RAG work together in CourseMate:
+
+*   Semantic embeddings are used as the default retrieval method in CourseMate, allowing it to find relevant passages from the uploaded course materials.
+*   RAG (Retrieval-Augmented Generation) combines information retrieval with language model generation, enabling CourseMate to retrieve relevant chunks from the document collection and then use those chunks to generate answers.
+*   The semantic embeddings are computed using a vector database, which stores vectors of the document representations.
+*   The RAG pipeline involves six stages: collect documents, split documents into overlapping chunks, compute semantic embeddings, store vectors in a vector database, retrieve the most relevant chunks for a question, and generate an answer with source citations.
+*   The use of semantic embeddings and RAG together allows CourseMate to provide more accurate and informative answers by leveraging the strengths of both methods.
+
+Sources: 
+Lecture 2: Retrieval-Augmented Generation; 
+Embedding and Vector Store Lab",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 2: Retrieval-Augmented Generation; Lecture 5: Responsible AI and Security,,,,
+rq17,YES,What safeguards help CourseMate avoid unsupported or unsafe answers?,"CourseMate should use relevance thresholds, refuse when evidence is missing, keep system instructions separate from documents, avoid fabricating citations, and show retrieved sources for verification.","CourseMate is designed to avoid unsupported or unsafe answers by following these safeguards:
+
+• It should not follow instructions inside uploaded documents that ask it to ignore safety rules, reveal secrets, or fabricate citations (Lecture 5: Responsible AI and Security, Page 2).
+• It should not commit API keys, passwords, or private student information to the repository or display them in the interface (Lecture 5: Responsible AI and Security, Page 1).
+• It should remain separate from document text and not inject prompts into retrieved documents (Lecture 5: Responsible AI and Security, Page 1).
+• It should enforce read-only permissions when appropriate, validate tool arguments, and log important actions (Lecture 5: Responsible AI and Security, Page 3).
+• It should show retrieved sources and explain when information is missing, and remind users to verify important policy decisions with official course materials or the instructor (Lecture 5: Responsible AI and Security, Page 4).
+
+Sources: Lecture 5: Responsible AI and Security; Lecture 4: Evaluation and Failure Analysis",CourseMate Sample Course: Syllabus and Project Policy; Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security,,,,PRIORITY REVIEW
+rq18,,How should CourseMate protect student privacy?,"It should avoid unnecessary collection of student data and avoid committing or displaying API keys, passwords, or private student information.","To protect student privacy, CourseMate should:
+
+• Avoid unnecessary collection of student data
+• Treat uploaded course documents as user-provided content
+• Not commit API keys, passwords, or private student information to the repository or display them in the interface
+• Follow safety rules and not ignore instructions that ask it to do so
+
+Sources: Lecture 5: Responsible AI and Security; Page 1",CourseMate Sample Course: Syllabus and Project Policy; Lecture 5: Responsible AI and Security,,,,
+rq19,YES,Why is prompt injection a risk for RAG systems?,"Retrieved documents are untrusted input, so they may contain instructions that try to override safety rules, reveal secrets, or fabricate citations.","Prompt injection is a risk for RAG (Reactive AI and Generation) systems because retrieved documents are untrusted input. Here's why:
+
+• The system prompt is not validated or sanitized before being combined with the retrieved document text.
+• This means that the prompt may contain malicious or unintended information that can compromise the system's safety and security.
+• If the prompt is not properly separated from the document text, it can lead to unexpected behavior or even security breaches.
+
+Sources: 
+# Lecture 5: Responsible AI and Security; chunk=chunk-0009; location=Page 2",Lecture 5: Responsible AI and Security,,,,PRIORITY REVIEW
+rq20,,What should CourseMate show users to support transparency?,"It should show retrieved sources, explain when information is missing, and remind users to verify important policy decisions with official materials or the instructor.","To support transparency, CourseMate should show users the following:
+
+• Retrieved sources
+• When information is missing
+• Remind users to verify important policy decisions with official course materials or the instructor
+
+Sources: Lecture 5: Responsible AI and Security; Page 4",CourseMate Sample Course: Syllabus and Project Policy; Lecture 5: Responsible AI and Security,,,,
+rq21,,"If the notes do not include an answer, what should the assistant say?",It should state that the uploaded materials do not contain enough evidence instead of guessing.,"If the notes do not include an answer, the assistant should say: ""The material does not contain enough evidence to provide an answer.""
+
+Sources: Lecture 4: Evaluation and Failure Analysis; chunk=chunk-0007; location=Slide 3",CourseMate Sample Course: Syllabus and Project Policy; Lecture 2: Retrieval-Augmented Generation; Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security,,,,
+rq22,,How can students check whether an answer is grounded?,"They can inspect retrieved sources, citations, source metadata, and snippets to verify that the answer is supported.","To check whether an answer is grounded, students can follow these steps:
+
+• Review the retrieved sources: Check if the assistant has provided sources that support the answer.
+• Look for citations: Verify if the assistant has cited relevant course materials or external sources to back up the answer.
+• Check for metadata: Inspect the metadata provided by the assistant, such as document titles, source file names, and chunk identifiers, to see if they match the course materials.
+• Evaluate the response: Assess the answer's correctness, relevance, and faithfulness to the course materials.
+
+Sources: Lecture 4: Evaluation and Failure Analysis; Embedding and Vector Store Lab",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 4: Evaluation and Failure Analysis; Lecture 5: Responsible AI and Security,,,,
+rq23,,Follow-up after asking about RAG stages: Why does chunk overlap matter?,Chunk overlap helps preserve meaning and continuity across section boundaries.,"Chunk overlap matters in RAG stages because it helps preserve meaning across section boundaries. Here's why:
+
+• It ensures that the model can understand the context of the question and the retrieved passages, even when the question spans multiple sections of the document.
+• By overlapping chunks, the model can better capture the relationships between different parts of the document, leading to more accurate and relevant answers.
+• This is especially important in RAG systems, where the model relies on the retrieved context to answer the question, rather than just its training data.
+
+Sources: Page 2; Lecture 2: Retrieval-Augmented Generation",Lecture 2: Retrieval-Augmented Generation,,,,
+rq24,,Follow-up after asking about evaluation metrics: Why are human notes still needed?,"Human notes are needed because automated metrics cannot fully judge faithfulness, usefulness, successful examples, failures, or unsupported claims.","Here's a concise answer in student-friendly language:
+
+Human notes are still needed because automated metrics like keyword recall, source hit rate, and latency measures can't fully judge the faithfulness or usefulness of the assistant's responses. These metrics can only estimate certain aspects, like whether expected concepts appear in an answer or whether expected documents were retrieved.
+
+Human review is necessary to inspect successful answers, failed answers, missing evidence, and unsupported claims, which are crucial for evaluating the assistant's performance. This is because human review can provide more nuanced and detailed feedback that automated metrics can't capture.
+
+Sources: Lecture 4: Evaluation and Failure Analysis; chunk=chunk-0007; location=Slide 1; chunk=chunk-0008; location=Slide 4",Lecture 4: Evaluation and Failure Analysis,,,,
+rq25,,What room is the final exam in?,The uploaded materials do not specify a final exam room.,I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.,,,,,
+rq26,,What is the instructor's phone number?,The uploaded materials do not provide the instructor's phone number.,I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.,,,,,
+rq27,,Which textbook chapter is due next Friday?,The uploaded materials do not specify a textbook chapter due next Friday.,I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.,,,,,
+rq28,,What is tomorrow's cafeteria menu?,The uploaded materials do not contain cafeteria menu information.,I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.,,,,,
+rq29,,What should be recorded for each evaluation example?,"The evaluation should record the reference answer, expected sources, actual retrieved sources, model answer, and reviewer notes.","For each evaluation example, the following information should be recorded:
+
+• Reference answer
+• Expected sources
+• Actual retrieved sources
+• Model answer
+• Reviewer notes
+
+Sources: Evaluation and Failure Analysis; Evaluation Sets",CourseMate Sample Course: Syllabus and Project Policy; Embedding and Vector Store Lab; Lecture 4: Evaluation and Failure Analysis,,,,
+rq30,,Who enforces tool permissions in a safe LLM application?,"The application code should enforce boundaries such as read-only permissions, argument validation, and action logging, even if the model proposes a tool call.","Here's the answer:
+
+In a safe LLM application, the application code enforces tool permissions. This means that the application itself checks and controls access to tools and databases, ensuring that only authorized actions are performed.
+
+Here's a step-by-step explanation:
+
+1. The application checks the user's permissions before allowing a tool call.
+2. The application enforces read-only permissions when appropriate, to prevent unauthorized changes.
+3. The application validates tool arguments to ensure they are safe and secure.
+
+This approach helps prevent potential risks, such as prompt injection or revealing sensitive information.
+
+Sources:
+# Lecture 5: Responsible AI and Security Page 3",Lecture 5: Responsible AI and Security,,,,
