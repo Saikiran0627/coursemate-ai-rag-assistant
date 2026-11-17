@@ -1,0 +1,377 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 1385 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(COURSEMATE: AI COURSE MATERIAL ASSISTANT) Tj
+T*
+() Tj
+T*
+(Team: Manish Chowdary Kalluri, Sai Kiran Sikilammetla, Venkata Naga) Tj
+T*
+(Kiran Katari) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(PROBLEM) Tj
+T*
+() Tj
+T*
+(- Students need answers from lecture notes, project instructions, and) Tj
+T*
+(- policies.) Tj
+T*
+(- General LLMs may not know the current course materials.) Tj
+T*
+(- Unsupported answers can mislead students.) Tj
+T*
+(- Goal: answer questions with evidence from course documents.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(SELECTED PROJECT TOPIC) Tj
+T*
+() Tj
+T*
+(- Topic 1: Retrieval-Augmented Generation System.) Tj
+T*
+(- Required flow: Documents -> Chunking -> Embeddings/Vector Store ->) Tj
+T*
+(- Retrieval -> LLM -> Response.) Tj
+T*
+(- Required comparison: answers with RAG vs. answers without RAG.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(SYSTEM ARCHITECTURE) Tj
+T*
+() Tj
+T*
+(```text) Tj
+T*
+(Course documents) Tj
+T*
+(-> loader) Tj
+T*
+(-> overlapping chunks) Tj
+T*
+(-> TF-IDF vectors) Tj
+T*
+(-> vector store) Tj
+T*
+(-> top-k retrieval) Tj
+T*
+(-> grounded prompt) Tj
+T*
+(-> LLM backend) Tj
+T*
+(-> cited answer) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(DATA) Tj
+T*
+() Tj
+T*
+(- Module 1: LLM basics and hallucination.) Tj
+T*
+(- Module 2: RAG pipeline.) Tj
+T*
+(- Module 3: agents and tool use.) Tj
+T*
+(- Module 4: evaluation methodology.) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 1542 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(- Course policy summary.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(PROMPT DESIGN) Tj
+T*
+() Tj
+T*
+(- Role: CourseMate, a course-material assistant.) Tj
+T*
+(- Context: retrieved chunks with source titles.) Tj
+T*
+(- Rules:) Tj
+T*
+(- answer only from provided course context;) Tj
+T*
+(- cite sources;) Tj
+T*
+(- do not invent definitions, deadlines, formulas, or policies;) Tj
+T*
+(- say when evidence is missing.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(MODEL BACKENDS) Tj
+T*
+() Tj
+T*
+(- Local open model path: Ollama, for example llama3.2:3b.) Tj
+T*
+(- Optional OpenAI-compatible backend through environment variables.) Tj
+T*
+(- Deterministic local generator for reproducible evaluation.) Tj
+T*
+(- Same retrieval pipeline is used regardless of backend.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(EVALUATION METHODOLOGY) Tj
+T*
+() Tj
+T*
+(- Six labeled test questions.) Tj
+T*
+(- Each question has expected source documents and expected keywords.) Tj
+T*
+(- Metrics:) Tj
+T*
+(- keyword recall;) Tj
+T*
+(- source hit rate;) Tj
+T*
+(- latency;) Tj
+T*
+(- qualitative success/failure review.) Tj
+T*
+(- Baseline: same assistant without retrieval.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(EXAMPLE: RAG WORKS) Tj
+T*
+() Tj
+T*
+(Question: What are the main steps in a RAG pipeline?) Tj
+T*
+() Tj
+T*
+(Retrieved source: Module 2: Retrieval-Augmented Generation.) Tj
+T*
+() Tj
+T*
+(Expected answer: documents are chunked, represented as vectors, stored,) Tj
+T*
+(retrieved for a query, and passed with the question to the LLM.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 1607 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+() Tj
+T*
+(EXAMPLE: NO-RAG BASELINE) Tj
+T*
+() Tj
+T*
+(Without retrieval, the assistant has no course context.) Tj
+T*
+() Tj
+T*
+(Expected safe behavior: say there is not enough evidence instead of) Tj
+T*
+(inventing a policy or lecture detail.) Tj
+T*
+() Tj
+T*
+(This demonstrates why retrieval matters for course-specific QA.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(FAILURE MODES) Tj
+T*
+() Tj
+T*
+(- TF-IDF can miss paraphrases with little keyword overlap.) Tj
+T*
+(- Retrieved chunks may be incomplete for multi-hop questions.) Tj
+T*
+(- A real LLM may ignore instructions and hallucinate.) Tj
+T*
+(- Source citations must be checked because citation presence does not) Tj
+T*
+(- guarantee support.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(RESPONSIBLE AI AND SECURITY) Tj
+T*
+() Tj
+T*
+(- Do not commit API keys or credentials.) Tj
+T*
+(- Use environment variables for hosted model access.) Tj
+T*
+(- Avoid sending private student data to unapproved services.) Tj
+T*
+(- Show citations and encourage verification.) Tj
+T*
+(- Future work: prompt-injection filtering and access control.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(DEMO COMMANDS) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(python3 -m coursemate.cli compare "What are the main steps in a RAG) Tj
+T*
+(pipeline?") Tj
+T*
+(python3 -m coursemate.cli ask "What should the final project submission) Tj
+T*
+(include?") Tj
+T*
+(python3 -m coursemate.cli evaluate) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(CONCLUSION) Tj
+T*
+() Tj
+T*
+(- CourseMate implements a complete RAG pipeline.) Tj
+T*
+(- Retrieval improves grounding over the no-RAG baseline.) Tj
+T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 259 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(- The system includes code, tests, evaluation data, documentation, paper) Tj
+T*
+(- source, and slide source.) Tj
+T*
+(- Future improvements: neural embeddings, PDF ingestion, web UI, and) Tj
+T*
+(- multi-model evaluation.) Tj
+T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000134 00000 n 
+0000000204 00000 n 
+0000001641 00000 n 
+0000001767 00000 n 
+0000003361 00000 n 
+0000003487 00000 n 
+0000005146 00000 n 
+0000005272 00000 n 
+0000005583 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+5711
+%%EOF

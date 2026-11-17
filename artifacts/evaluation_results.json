@@ -1,0 +1,148 @@
+[
+  {
+    "case_id": "q1",
+    "mode": "no_rag",
+    "question": "What are the main steps in a RAG pipeline?",
+    "answer": "I do not have enough course-material context to answer reliably. Please provide course notes or enable retrieval.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.0001
+  },
+  {
+    "case_id": "q1",
+    "mode": "rag",
+    "question": "What are the main steps in a RAG pipeline?",
+    "answer": "A standard RAG pipeline contains these steps: collect documents, split them into chunks, compute embeddings or vector representations, store the vectors in a vector store, retrieve the most relevant chunks for a user question, and send the question plus retrieved context to the LLM. In a RAG project, a common baseline is the same model answering without retrieved documents. If a hosted model or service is used, credentials must be stored in environment variables or local configuration files that are excluded from version control.\n\nSources: Module 2: Retrieval-Augmented Generation; chunk=chunk-0005; score=0.195, Module 4: LLM Evaluation; chunk=chunk-0009; score=0.081, Course Policy Summary; chunk=chunk-0002; score=0.069",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Course Policy Summary",
+      "Module 2: Retrieval-Augmented Generation",
+      "Module 4: LLM Evaluation"
+    ],
+    "latency_seconds": 0.0003
+  },
+  {
+    "case_id": "q2",
+    "mode": "no_rag",
+    "question": "Why should a course assistant use retrieval instead of only relying on model training data?",
+    "answer": "I do not have enough course-material context to answer reliably. Please provide course notes or enable retrieval.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.0
+  },
+  {
+    "case_id": "q2",
+    "mode": "rag",
+    "question": "Why should a course assistant use retrieval instead of only relying on model training data?",
+    "answer": "Retrieval lets the assistant use the current course materials without retraining the model. Instead of asking a model to answer only from its parameters, the system first retrieves relevant documents and places those passages into the prompt. RAG is useful for course assistants because lecture notes, slides, syllabi, and assignments change faster than a model's training data.\n\nSources: Module 2: Retrieval-Augmented Generation; chunk=chunk-0006; score=0.225, Course Policy Summary; chunk=chunk-0001; score=0.121, Module 1: Large Language Model Basics; chunk=chunk-0004; score=0.115",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Course Policy Summary",
+      "Module 1: Large Language Model Basics",
+      "Module 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 0.0003
+  },
+  {
+    "case_id": "q3",
+    "mode": "no_rag",
+    "question": "What should the final project submission include?",
+    "answer": "I do not have enough course-material context to answer reliably. Please provide course notes or enable retrieval.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.0
+  },
+  {
+    "case_id": "q3",
+    "mode": "rag",
+    "question": "What should the final project submission include?",
+    "answer": "The final answer should include citations or source information so the user can verify the response. # Course Policy Summary The final project requires a working LLM-powered application, a technical paper, presentation slides, source code, and a demonstration. Submissions should not include API keys, passwords, credentials, or sensitive information.\n\nSources: Course Policy Summary; chunk=chunk-0001; score=0.234, Course Policy Summary; chunk=chunk-0002; score=0.141, Module 2: Retrieval-Augmented Generation; chunk=chunk-0006; score=0.118",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Course Policy Summary",
+      "Module 2: Retrieval-Augmented Generation",
+      "Module 4: LLM Evaluation"
+    ],
+    "latency_seconds": 0.0002
+  },
+  {
+    "case_id": "q4",
+    "mode": "no_rag",
+    "question": "How should LLM systems handle missing evidence?",
+    "answer": "I do not have enough course-material context to answer reliably. Please provide course notes or enable retrieval.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.0
+  },
+  {
+    "case_id": "q4",
+    "mode": "rag",
+    "question": "How should LLM systems handle missing evidence?",
+    "answer": "For factual course assistants, prompts should explicitly tell the model not to invent answers when evidence is missing. For a RAG assistant, useful metrics include retrieval source accuracy, answer keyword recall, citation correctness, refusal accuracy when evidence is missing, and response latency. Agent systems should log tool calls, validate tool arguments, and restrict dangerous actions.\n\nSources: Module 4: LLM Evaluation; chunk=chunk-0009; score=0.191, Module 1: Large Language Model Basics; chunk=chunk-0004; score=0.151, Module 3: Agents and Tool Use; chunk=chunk-0008; score=0.108",
+    "keyword_recall": 0.333,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Module 1: Large Language Model Basics",
+      "Module 2: Retrieval-Augmented Generation",
+      "Module 3: Agents and Tool Use",
+      "Module 4: LLM Evaluation"
+    ],
+    "latency_seconds": 0.0002
+  },
+  {
+    "case_id": "q5",
+    "mode": "no_rag",
+    "question": "What metrics are useful for evaluating a RAG assistant?",
+    "answer": "I do not have enough course-material context to answer reliably. Please provide course notes or enable retrieval.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.0
+  },
+  {
+    "case_id": "q5",
+    "mode": "rag",
+    "question": "What metrics are useful for evaluating a RAG assistant?",
+    "answer": "For a RAG assistant, useful metrics include retrieval source accuracy, answer keyword recall, citation correctness, refusal accuracy when evidence is missing, and response latency. RAG is useful for course assistants because lecture notes, slides, syllabi, and assignments change faster than a model's training data. A good evaluation set contains realistic inputs, expected behaviors, and clear metrics.\n\nSources: Module 4: LLM Evaluation; chunk=chunk-0009; score=0.243, Module 2: Retrieval-Augmented Generation; chunk=chunk-0006; score=0.109, Course Policy Summary; chunk=chunk-0001; score=0.085",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Course Policy Summary",
+      "Module 1: Large Language Model Basics",
+      "Module 2: Retrieval-Augmented Generation",
+      "Module 4: LLM Evaluation"
+    ],
+    "latency_seconds": 0.0003
+  },
+  {
+    "case_id": "q6",
+    "mode": "no_rag",
+    "question": "Why should agent tools be restricted or validated?",
+    "answer": "I do not have enough course-material context to answer reliably. Please provide course notes or enable retrieval.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.0
+  },
+  {
+    "case_id": "q6",
+    "mode": "rag",
+    "question": "Why should agent tools be restricted or validated?",
+    "answer": "Evaluation of agents should include tasks where no tool is needed, tasks where one tool is clearly needed, and tasks where the agent must choose between multiple possible tools. should be delegated to a calculator, current facts should be delegated to search, and private structured records should be delegated to a database with safe access controls. Agent systems should log tool calls, validate tool arguments, and restrict dangerous actions.\n\nSources: Module 3: Agents and Tool Use; chunk=chunk-0008; score=0.275, Module 3: Agents and Tool Use; chunk=chunk-0007; score=0.235, Course Policy Summary; chunk=chunk-0002; score=0.030",
+    "keyword_recall": 0.25,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Course Policy Summary",
+      "Module 3: Agents and Tool Use",
+      "Module 4: LLM Evaluation"
+    ],
+    "latency_seconds": 0.0002
+  }
+]
