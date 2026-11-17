@@ -20,6 +20,8 @@ class SemanticStoreError(RuntimeError):
 class ChromaSemanticVectorStore:
     """A ChromaDB-backed semantic vector store for uploaded course documents."""
 
+    backend_name = "sentence-transformers-chromadb"
+
     def __init__(
         self,
         *,

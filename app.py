@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+import shutil
 import tempfile
 import uuid
 from pathlib import Path
@@ -24,11 +26,13 @@ from coursemate.llm import (
     list_ollama_models,
     ollama_generate_smoke_test,
 )
+from coursemate.rag import SEMANTIC_RELEVANCE_THRESHOLD
 
 
 APP_TITLE = "CourseMate"
 DEFAULT_MODEL = "llama3.2:3b"
 DEFAULT_EVAL_FILE = Path("data/evaluation/questions.jsonl")
+REALISTIC_EVAL_FILE = Path("data/evaluation/realistic_questions.jsonl")
 DEFAULT_SAMPLE_DIR = Path("data/course_materials")
 
 
@@ -115,6 +119,18 @@ def render_sidebar():
 
         top_k = st.slider("Retrieved chunks", min_value=1, max_value=8, value=4)
         st.session_state["top_k"] = top_k
+        relevance_threshold = st.slider(
+            "Evidence relevance threshold",
+            min_value=0.0,
+            max_value=0.8,
+            value=SEMANTIC_RELEVANCE_THRESHOLD,
+            step=0.01,
+            help=(
+                "Chunks below this calibrated similarity score are not used as evidence. "
+                "Raise it to be stricter; lower it if valid uploaded material is missed."
+            ),
+        )
+        st.session_state["relevance_threshold"] = relevance_threshold
 
         if st.button("Build / refresh semantic index", type="primary"):
             build_index(llm)
@@ -123,6 +139,9 @@ def render_sidebar():
         chunk_count = len(st.session_state["chunks"])
         st.metric("Documents", doc_count)
         st.metric("Indexed chunks", chunk_count)
+        assistant = st.session_state.get("assistant")
+        if assistant is not None:
+            st.caption(f"Retrieval backend: `{getattr(assistant, 'retrieval_backend', 'unknown')}`")
         if st.session_state["assistant"] is None:
             st.info("Add documents and build the semantic index before chatting.")
         return llm
@@ -175,7 +194,7 @@ def build_index(llm) -> None:
     persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
     with st.spinner("Embedding documents and building ChromaDB index..."):
         try:
-            result = build_semantic_assistant(docs, llm, persist_dir=persist_dir)
+            result = _build_index_with_retry(docs, llm, persist_dir)
         except Exception as exc:
             st.error(f"Could not build semantic index: {exc}")
             return
@@ -189,6 +208,43 @@ def attach_llm(llm) -> None:
     assistant = st.session_state.get("assistant")
     if assistant is not None:
         assistant.llm = llm
+
+
+def _build_index_with_retry(docs, llm, persist_dir: Path):
+    try:
+        return build_semantic_assistant(
+            docs,
+            llm,
+            persist_dir=persist_dir,
+            relevance_threshold=st.session_state["relevance_threshold"],
+        )
+    except Exception as exc:
+        message = str(exc).lower()
+        recoverable_chroma_error = (
+            "no such table: tenants" in message
+            or "readonly database" in message
+            or "attempt to write a readonly database" in message
+        )
+        if not recoverable_chroma_error:
+            raise
+        _reset_index_state(delete_store=True)
+        persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
+        return build_semantic_assistant(
+            docs,
+            llm,
+            persist_dir=persist_dir,
+            relevance_threshold=st.session_state["relevance_threshold"],
+        )
+
+
+def _reset_index_state(*, delete_store: bool) -> None:
+    if delete_store:
+        persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
+        shutil.rmtree(persist_dir, ignore_errors=True)
+    st.session_state["assistant"] = None
+    st.session_state["chunks"] = []
+    st.session_state["last_index_signature"] = None
+    st.session_state["session_id"] = uuid.uuid4().hex
 
 
 def render_chat_tab() -> None:
@@ -215,7 +271,11 @@ def render_chat_tab() -> None:
         st.markdown(question)
 
     history = [
-        {"role": item["role"], "content": item["content"]}
+        {
+            "role": item["role"],
+            "content": item["content"],
+            "evidence_status": item.get("evidence_status", ""),
+        }
         for item in st.session_state["messages"][:-1]
         if item["role"] in {"user", "assistant"}
     ]
@@ -228,19 +288,22 @@ def render_chat_tab() -> None:
                     top_k=st.session_state["top_k"],
                     use_rag=True,
                     chat_history=history,
+                    relevance_threshold=st.session_state["relevance_threshold"],
                 )
             except Exception as exc:
                 st.error(f"Answer generation failed: {exc}")
                 return
         st.markdown(timed.answer.answer)
         st.caption(f"Response time: {timed.latency_seconds}s")
-        render_sources(timed.answer.retrieved)
+        if timed.answer.retrieved:
+            render_sources(timed.answer.retrieved)
 
     st.session_state["messages"].append(
         {
             "role": "assistant",
             "content": timed.answer.answer,
             "sources": timed.answer.retrieved,
+            "evidence_status": timed.answer.evidence_status,
         }
     )
 
@@ -254,7 +317,11 @@ def render_comparison_tab() -> None:
     question = st.text_area("Comparison question", height=90)
     if st.button("Compare answers", type="primary") and question.strip():
         history = [
-            {"role": item["role"], "content": item["content"]}
+            {
+                "role": item["role"],
+                "content": item["content"],
+                "evidence_status": item.get("evidence_status", ""),
+            }
             for item in st.session_state["messages"]
             if item["role"] in {"user", "assistant"}
         ]
@@ -268,6 +335,7 @@ def render_comparison_tab() -> None:
                     top_k=st.session_state["top_k"],
                     use_rag=False,
                     chat_history=history,
+                    relevance_threshold=st.session_state["relevance_threshold"],
                 )
                 st.markdown(no_rag.answer.answer)
                 st.caption(f"Response time: {no_rag.latency_seconds}s")
@@ -282,10 +350,12 @@ def render_comparison_tab() -> None:
                     top_k=st.session_state["top_k"],
                     use_rag=True,
                     chat_history=history,
+                    relevance_threshold=st.session_state["relevance_threshold"],
                 )
                 st.markdown(rag.answer.answer)
                 st.caption(f"Response time: {rag.latency_seconds}s")
-                render_sources(rag.answer.retrieved)
+                if rag.answer.retrieved:
+                    render_sources(rag.answer.retrieved)
             except Exception as exc:
                 st.error(f"RAG answer failed: {exc}")
 
@@ -297,7 +367,20 @@ def render_evaluation_tab() -> None:
         return
 
     st.write("Evaluate answer quality, retrieval relevance, hallucination risk, and latency.")
-    use_default_cases = st.checkbox("Use built-in CourseMate test cases", value=True)
+    eval_dataset = st.selectbox(
+        "Evaluation dataset",
+        [
+            "Original quick checks",
+            "Realistic 30-question course evaluation",
+        ],
+        index=1,
+    )
+    selected_eval_file = (
+        REALISTIC_EVAL_FILE
+        if eval_dataset == "Realistic 30-question course evaluation"
+        else DEFAULT_EVAL_FILE
+    )
+    use_default_cases = st.checkbox("Use selected built-in test cases", value=True)
     custom_question = st.text_input("Optional custom test question")
     custom_keywords = st.text_input("Expected keywords for custom question, comma-separated")
     custom_sources = st.text_input("Expected source titles for custom question, comma-separated")
@@ -305,7 +388,7 @@ def render_evaluation_tab() -> None:
     if st.button("Run evaluation", type="primary"):
         cases: list[EvaluationCase] = []
         if use_default_cases:
-            cases.extend(load_cases(DEFAULT_EVAL_FILE))
+            cases.extend(load_cases(selected_eval_file))
         if custom_question.strip():
             cases.append(
                 EvaluationCase(
@@ -335,20 +418,37 @@ def render_evaluation_tab() -> None:
         st.dataframe(pd.DataFrame(summary).T, use_container_width=True)
 
         rows = []
+        case_lookup = {case.id: case for case in cases}
         for result in results:
+            case = case_lookup.get(result.case_id)
             rows.append(
                 {
                     "case_id": result.case_id,
+                    "category": case.category if case else "",
                     "mode": result.mode,
                     "keyword_recall": result.keyword_recall,
-                    "source_hit": result.source_hit,
+                    "source_hit": result.source_hit if result.source_hit_applicable else "N/A",
+                    "correct_refusal": (
+                        result.correct_refusal
+                        if result.correct_refusal is not None
+                        else "N/A"
+                    ),
                     "latency_seconds": result.latency_seconds,
                     "retrieved_sources": ", ".join(result.retrieved_sources),
                     "hallucination_risk": hallucination_risk(result),
+                    "human_factual_correctness": result.human_factual_correctness,
+                    "human_citation_support": result.human_citation_support,
+                    "human_completeness": result.human_completeness,
+                    "human_notes": result.human_notes,
+                    "reference_answer": case.reference_answer if case else "",
                     "answer": result.answer,
                 }
             )
         st.subheader("Detailed Results")
+        st.caption(
+            "Automated keyword/source metrics are estimates. Keep them separate from "
+            "human review of faithfulness, citation support, and usefulness."
+        )
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
         st.subheader("Latency")
         st.bar_chart(pd.DataFrame(rows), x="case_id", y="latency_seconds", color="mode")
@@ -367,14 +467,12 @@ def render_documents_tab() -> None:
             st.text_area("Preview", item.document.text[:3000], height=180, key=f"preview-{index}")
             if st.button("Remove document", key=f"remove-{index}"):
                 st.session_state["uploaded_docs"].pop(index)
-                st.session_state["assistant"] = None
-                st.session_state["chunks"] = []
+                _reset_index_state(delete_store=True)
                 st.rerun()
 
     if st.button("Clear all documents"):
         st.session_state["uploaded_docs"] = []
-        st.session_state["assistant"] = None
-        st.session_state["chunks"] = []
+        _reset_index_state(delete_store=True)
         st.session_state["messages"] = []
         st.rerun()
 
@@ -401,17 +499,26 @@ def render_documents_tab() -> None:
 
 def render_sources(sources) -> None:
     if not sources:
-        st.info("No sources retrieved.")
         return
     with st.expander("Sources and retrieved chunks", expanded=False):
         for item in sources:
-            st.markdown(f"**{item.chunk.title}** · `{item.chunk.chunk_id}` · score `{item.score:.3f}`")
+            location = _chunk_location(item.chunk.text)
+            location_part = f" · {location}" if location else ""
+            st.markdown(
+                f"**{item.chunk.title}**{location_part} · `{item.chunk.chunk_id}` · "
+                f"score `{item.score:.3f}`"
+            )
             st.caption(item.chunk.source_path)
             st.write(item.chunk.text)
 
 
 def _split_csv(value: str) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _chunk_location(text: str) -> str:
+    match = re.search(r"\b(Page|Slide)\s+(\d+)\b", text)
+    return f"{match.group(1)} {match.group(2)}" if match else ""
 
 
 if __name__ == "__main__":

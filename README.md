@@ -30,8 +30,10 @@ The web app uses free and open-source technologies:
 - Ollama for a local LLM such as Llama 3.2 3B.
 - PDF, PPTX, DOCX, TXT, and Markdown upload parsing.
 
-The original TF-IDF implementation remains available for lightweight CLI tests,
-but the web application uses semantic retrieval by default.
+The Streamlit web application uses Sentence Transformers embeddings and ChromaDB
+vector retrieval by default. The original TF-IDF implementation remains
+available only as a lightweight CLI/test fallback with a separately calibrated
+threshold.
 
 ## Repository Structure
 
@@ -85,6 +87,12 @@ In the browser:
 5. Use **RAG Comparison** to view no-RAG and RAG answers side by side.
 6. Use **Evaluation** to inspect test cases, answer quality, source relevance,
    hallucination-risk analysis, and response times.
+
+CourseMate handles simple greetings and thanks directly without retrieval, so
+messages such as "Hello" do not produce irrelevant citations. The sidebar also
+includes an **Evidence relevance threshold** control. Chunks below that
+similarity threshold are not used as evidence, and CourseMate will say when the
+uploaded materials do not contain enough support for an answer.
 
 If Ollama is unavailable, deterministic demo mode can be used to verify
 retrieval and UI behavior, but it is not a substitute for testing real local LLM

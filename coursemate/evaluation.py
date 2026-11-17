@@ -17,6 +17,8 @@ class EvaluationCase:
     question: str
     expected_keywords: list[str]
     expected_sources: list[str]
+    reference_answer: str = ""
+    category: str = "general"
     notes: str = ""
 
 
@@ -27,9 +29,15 @@ class EvaluationResult:
     question: str
     answer: str
     keyword_recall: float
-    source_hit: float
+    source_hit: float | None
+    source_hit_applicable: bool
     retrieved_sources: list[str]
     latency_seconds: float
+    correct_refusal: bool | None = None
+    human_factual_correctness: str = "not_reviewed"
+    human_citation_support: str = "not_reviewed"
+    human_completeness: str = "not_reviewed"
+    human_notes: str = ""
 
 
 def load_cases(path: str | Path) -> list[EvaluationCase]:
@@ -67,9 +75,19 @@ def evaluate(
                     question=case.question,
                     answer=answer.answer,
                     keyword_recall=_keyword_recall(answer.answer, case.expected_keywords),
-                    source_hit=_source_hit(retrieved_sources, case.expected_sources),
+                    source_hit=(
+                        _source_hit(retrieved_sources, case.expected_sources)
+                        if answer.mode == "rag" and case.expected_sources
+                        else None
+                    ),
+                    source_hit_applicable=answer.mode == "rag" and bool(case.expected_sources),
                     retrieved_sources=retrieved_sources,
                     latency_seconds=round(latency, 4),
+                    correct_refusal=(
+                        _is_refusal(answer.answer)
+                        if case.category == "unanswerable"
+                        else None
+                    ),
                 )
             )
     return results
@@ -80,15 +98,28 @@ def summarize(results: list[EvaluationResult]) -> dict[str, dict[str, float]]:
     for result in results:
         by_mode.setdefault(result.mode, []).append(result)
 
-    return {
-        mode: {
+    summary = {}
+    for mode, items in sorted(by_mode.items()):
+        applicable_source_hits = [
+            item.source_hit for item in items if item.source_hit_applicable and item.source_hit is not None
+        ]
+        refusal_items = [item for item in items if item.correct_refusal is not None]
+        summary[mode] = {
             "cases": float(len(items)),
             "avg_keyword_recall": round(mean(item.keyword_recall for item in items), 3),
-            "avg_source_hit": round(mean(item.source_hit for item in items), 3),
+            "avg_source_hit": (
+                round(mean(applicable_source_hits), 3)
+                if applicable_source_hits
+                else None
+            ),
             "avg_latency_seconds": round(mean(item.latency_seconds for item in items), 4),
         }
-        for mode, items in sorted(by_mode.items())
-    }
+        if refusal_items:
+            summary[mode]["correct_refusal_rate"] = round(
+                mean(1.0 if item.correct_refusal else 0.0 for item in refusal_items),
+                3,
+            )
+    return summary
 
 
 def write_results(results: list[EvaluationResult], path: str | Path) -> None:
@@ -110,3 +141,16 @@ def _source_hit(retrieved_sources: list[str], expected_sources: list[str]) -> fl
     retrieved = {source.lower() for source in retrieved_sources}
     expected = {source.lower() for source in expected_sources}
     return round(len(retrieved & expected) / len(expected), 3)
+
+
+def _is_refusal(answer: str) -> bool:
+    normalized = answer.lower()
+    refusal_markers = [
+        "could not find enough relevant evidence",
+        "not enough evidence",
+        "do not have enough evidence",
+        "does not contain",
+        "not specify",
+        "cannot determine",
+    ]
+    return any(marker in normalized for marker in refusal_markers)

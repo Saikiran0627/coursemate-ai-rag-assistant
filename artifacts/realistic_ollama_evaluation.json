@@ -1,0 +1,673 @@
+[
+  {
+    "case_id": "rq01",
+    "mode": "no_rag",
+    "question": "What are the six stages in a typical RAG pipeline?",
+    "answer": "I'm not familiar with the specific RAG pipeline stages you're referring to, as no context or course materials were provided. My answer may not be reliable or accurate in this case. However, I can suggest that the RAG (Read, Analyze, Generate) pipeline is a common framework used in Natural Language Processing (NLP) tasks, and it typically involves the following stages:\n\n1. Read: Extracting relevant information from text data\n2. Analyze: Processing and understanding the extracted information\n3. Generate: Creating new text based on the analyzed information\n\nIf you're looking for a more detailed or specific answer, I recommend consulting the course materials or a reliable source for more information.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 11.0047
+  },
+  {
+    "case_id": "rq01",
+    "mode": "rag",
+    "question": "What are the six stages in a typical RAG pipeline?",
+    "answer": "Here are the six stages in a typical RAG pipeline:\n\n1. Collect documents: Gathering a collection of relevant documents for the RAG system.\n2. Split documents into overlapping chunks: Breaking down the collected documents into smaller, overlapping sections to help preserve meaning across section boundaries.\n3. Compute semantic embeddings: Converting the document chunks into numerical representations that capture their semantic meaning.\n4. Store vectors in a vector database: Storing the computed semantic embeddings in a database for efficient retrieval.\n5. Retrieve the most relevant chunks for a question: Using the vector database to find the most relevant document chunks that match the query.\n6. Generate an answer with source citations: Using the retrieved chunks to generate an answer and include source citations to provide context and credibility.\n\nSources: Page 2; Page 3",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 12.6375
+  },
+  {
+    "case_id": "rq02",
+    "mode": "no_rag",
+    "question": "Why is RAG useful for course assistants?",
+    "answer": "I'm not familiar with the specific context of RAG in relation to course assistants. Without additional information, I'm unable to provide a reliable answer. If you could provide more context or clarify what RAG refers to in this context, I'd be happy to try and assist you further.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 4.6462
+  },
+  {
+    "case_id": "rq02",
+    "mode": "rag",
+    "question": "Why is RAG useful for course assistants?",
+    "answer": "RAG is useful for course assistants because it allows them to use current course materials without retraining the model, which changes frequently during a semester. This enables the assistant to provide accurate and relevant answers to students without relying on outdated information.\n\nSources: Lecture 2: Retrieval-Augmented Generation; Lecture 5: Responsible AI and Security",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 2: Retrieval-Augmented Generation",
+      "Lecture 4: Evaluation and Failure Analysis",
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 5.8099
+  },
+  {
+    "case_id": "rq03",
+    "mode": "no_rag",
+    "question": "What should CourseMate do when no sufficiently relevant chunks are found?",
+    "answer": "When no sufficiently relevant chunks are found, I should:\n\n1. Clarify the context of the question to ensure I understand the user's needs.\n2. Provide a general, helpful answer based on my general knowledge.\n3. Be transparent that the answer is not grounded in uploaded course materials, as no relevant context was provided.\n\nIn this case, my response may not be directly applicable to the specific course materials. If the question depends on specific course materials, my answer may be unreliable.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 7.5091
+  },
+  {
+    "case_id": "rq03",
+    "mode": "rag",
+    "question": "What should CourseMate do when no sufficiently relevant chunks are found?",
+    "answer": "When no sufficiently relevant chunks are found, CourseMate should say that it does not have enough evidence in the uploaded materials.\n\nSources: Lecture 2: Retrieval-Augmented Generation; chunk-0004; location=Page 4; score=0.511",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 4.3038
+  },
+  {
+    "case_id": "rq04",
+    "mode": "no_rag",
+    "question": "What are semantic embeddings?",
+    "answer": "Semantic embeddings are a way to represent words or phrases as vectors in a high-dimensional space, where similar words or phrases are mapped to nearby points. This allows for the capture of semantic relationships between words, such as synonyms, antonyms, and related concepts.\n\nIn essence, semantic embeddings are a way to quantify the meaning of words, enabling computers to understand the nuances of language and make more accurate predictions, such as text classification, sentiment analysis, and language translation.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 7.0708
+  },
+  {
+    "case_id": "rq04",
+    "mode": "rag",
+    "question": "What are semantic embeddings?",
+    "answer": "Semantic embeddings represent text as numerical vectors. These vectors capture the meaning of the text, allowing texts with similar meaning to have vectors that are close together, even when they use different words.\n\nIn other words, semantic embeddings aim to preserve the semantic meaning of the text, rather than just its literal meaning. This allows for more accurate text retrieval and comparison.\n\nSources: \nEmbedding and Vector Store Lab; Page 1",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Embedding and Vector Store Lab"
+    ],
+    "latency_seconds": 6.5181
+  },
+  {
+    "case_id": "rq05",
+    "mode": "no_rag",
+    "question": "What metadata should a CourseMate ChromaDB collection preserve?",
+    "answer": "I'll do my best to provide a helpful answer based on my general knowledge.\n\nA CourseMate ChromaDB collection should preserve metadata such as the course title, instructor name, course description, learning objectives, and any relevant keywords or tags. This metadata can help users quickly identify and access relevant course materials, making it easier to navigate and find what they need.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 5.7062
+  },
+  {
+    "case_id": "rq05",
+    "mode": "rag",
+    "question": "What metadata should a CourseMate ChromaDB collection preserve?",
+    "answer": "A CourseMate ChromaDB collection should preserve the following metadata:\n\n\u2022 Document titles\n\u2022 Source file names\n\u2022 Chunk identifiers\n\u2022 Page or slide labels when available\n\nThese metadata support citations and allow users to inspect the retrieved evidence.\n\nSources: Embedding and Vector Store Lab; Embedding and Vector Store Lab Page 1",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Embedding and Vector Store Lab",
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 5.3021
+  },
+  {
+    "case_id": "rq06",
+    "mode": "no_rag",
+    "question": "Why should semantic thresholds be calibrated separately from TF-IDF thresholds?",
+    "answer": "I'll do my best to provide a helpful answer based on my general knowledge.\n\nSemantic thresholds and TF-IDF thresholds are both used in natural language processing (NLP) to evaluate the relevance of words or phrases in a document. However, they serve different purposes and are sensitive to different types of noise.\n\nSemantic thresholds are used to filter out words that are semantically irrelevant to the topic at hand. These thresholds are typically based on word embeddings, such as Word2Vec or GloVe, which capture the semantic relationships between words. Calibrating semantic thresholds separately from TF-IDF thresholds is important because TF-IDF is sensitive to the frequency of words in a document, which can be misleading. For example, a word that appears frequently in a document may not be semantically relevant to the topic. By calibrating semantic thresholds separately, you can ensure that the filter is based on the actual semantic meaning of the words, rather than just their frequency.\n\nIn summary, calibrating semantic thresholds separately from TF-IDF thresholds is important to ensure that the filter is based on the actual semantic meaning of the words, rather than just their frequency.",
+    "keyword_recall": 0.75,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 17.063
+  },
+  {
+    "case_id": "rq06",
+    "mode": "rag",
+    "question": "Why should semantic thresholds be calibrated separately from TF-IDF thresholds?",
+    "answer": "Here's the answer to your question:\n\nSemantic thresholds should be calibrated separately from TF-IDF thresholds because they are based on different similarity measures. TF-IDF (Term Frequency-Inverse Document Frequency) uses word frequencies and document frequencies to calculate similarity, while semantic cosine similarity uses numerical vectors to represent text meaning. Since these measures capture different aspects of text similarity, a threshold that works well for TF-IDF may not work as well for semantic cosine similarity.\n\nHere are the key points to consider:\n\n1. **Different similarity measures**: TF-IDF and semantic cosine similarity use different methods to calculate text similarity.\n2. **Incompatible thresholds**: A threshold that works well for one measure may not work as well for the other.\n3. **Calibration is necessary**: Calibrating thresholds separately ensures that the chosen threshold is suitable for the specific similarity measure used.\n\nSources: \nEmbedding and Vector Store Lab; Page 3",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Embedding and Vector Store Lab"
+    ],
+    "latency_seconds": 14.69
+  },
+  {
+    "case_id": "rq07",
+    "mode": "no_rag",
+    "question": "How does the assistant find notes that mean the same thing as my question even if the words differ?",
+    "answer": "I can provide a general answer to your question. The assistant uses natural language processing (NLP) and machine learning algorithms to analyze and understand the context of your question. When you ask a question with different wording, the assistant tries to identify the underlying meaning and intent behind your words.\n\nThis is achieved through various techniques, such as:\n\n1. Tokenization: breaking down your question into individual words and phrases to analyze their meaning.\n2. Part-of-speech tagging: identifying the grammatical categories of each word (e.g., noun, verb, adjective).\n3. Named entity recognition: identifying specific entities mentioned in your question (e.g., people, places, organizations).\n4. Semantic analysis: analyzing the relationships between words and concepts to identify the underlying meaning.\n\nBy combining these techniques, the assistant can often infer the intended meaning of your question, even if the words differ. However, please note that this answer is not grounded in uploaded course materials, and the accuracy of the assistant's response may vary depending on the complexity of the question and the quality of the training data.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 16.7104
+  },
+  {
+    "case_id": "rq07",
+    "mode": "rag",
+    "question": "How does the assistant find notes that mean the same thing as my question even if the words differ?",
+    "answer": "Here's the answer to your question:\n\nTo find notes that mean the same thing as your question even if the words differ, the assistant uses semantic retrieval. Here's how it works:\n\n\u2022 The assistant uses a semantic vector database as its primary retrieval system (Lecture 2: Retrieval-Augmented Generation, Page 4).\n\u2022 It computes semantic embeddings for the question and the retrieved chunks (Embedding and Vector Store Lab, Page 1).\n\u2022 The semantic embeddings represent the text as numerical vectors, so texts with similar meaning should have vectors that are close together (Embedding and Vector Store Lab, Page 1).\n\u2022 The assistant applies a relevance threshold to avoid treating weak matches as evidence (Lecture 2: Retrieval-Augmented Generation, Page 4).\n\u2022 If no sufficiently relevant chunks are found, the assistant says that it does not have enough evidence in the uploaded materials (Lecture 2: Retrieval-Augmented Generation, Page 4).\n\nSources: Lecture 2: Retrieval-Augmented Generation; Embedding and Vector Store Lab",
+    "keyword_recall": 0.5,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Embedding and Vector Store Lab",
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 17.8763
+  },
+  {
+    "case_id": "rq08",
+    "mode": "no_rag",
+    "question": "What baseline should RAG evaluation compare against?",
+    "answer": "I'm not familiar with the specific context of RAG evaluation in the course materials. However, based on general knowledge, RAG (Relevance, Accuracy, and Completeness) evaluation is a common metric used to assess the quality of information retrieval systems. In this case, a baseline for RAG evaluation could be a gold standard dataset or a set of known, high-quality answers that serve as a reference point for comparison. Without specific course materials, I couldn't provide a more precise answer.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 7.8957
+  },
+  {
+    "case_id": "rq08",
+    "mode": "rag",
+    "question": "What baseline should RAG evaluation compare against?",
+    "answer": "To evaluate the effectiveness of RAG, it should compare against a baseline that uses the same model without retrieved context. This isolates the value of retrieval and allows for the measurement of its impact on the overall performance of the RAG system.\n\nSources: Lecture 4: Evaluation and Failure Analysis; Lecture 2: Retrieval-Augmented Generation",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 2: Retrieval-Augmented Generation",
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 5.6407
+  },
+  {
+    "case_id": "rq09",
+    "mode": "no_rag",
+    "question": "Which measurements are useful for evaluating CourseMate?",
+    "answer": "I'm CourseMate, your AI course assistant.\n\nTo evaluate my performance, the following measurements are useful:\n\n1. **Accuracy**: How well do my responses match the correct answers?\n2. **Relevance**: Are my responses relevant to the user's question or topic?\n3. **Completeness**: Do my responses provide all the necessary information to answer the user's question?\n4. **Clarity**: How easy is it for users to understand my responses?\n5. **Timeliness**: How quickly do I respond to user queries?\n\nPlease note that these measurements are not grounded in uploaded course materials, as no context was provided. If specific course materials were relevant to the question, my answer may be unreliable.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 11.0571
+  },
+  {
+    "case_id": "rq09",
+    "mode": "rag",
+    "question": "Which measurements are useful for evaluating CourseMate?",
+    "answer": "Here are the useful measurements for evaluating CourseMate:\n\n\u2022 Answer correctness\n\u2022 Retrieval relevance\n\u2022 Citation accuracy\n\u2022 Hallucination rate\n\u2022 Response latency\n\nThese metrics help evaluate the effectiveness of the CourseMate system in providing accurate and relevant answers, while also identifying potential issues such as hallucinations and response time.\n\nSources:\nLecture 4: Evaluation and Failure Analysis",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 8.4169
+  },
+  {
+    "case_id": "rq10",
+    "mode": "no_rag",
+    "question": "Why should automated metrics be kept separate from human review?",
+    "answer": "Automated metrics should be kept separate from human review because they can introduce biases and inconsistencies that may not be immediately apparent. Automated metrics are often based on algorithms and statistical models that can be flawed or outdated, leading to inaccurate or unfair assessments. Human review, on the other hand, provides a more nuanced and contextual understanding of the work being evaluated. By separating automated metrics from human review, educators can ensure that assessments are fair, reliable, and transparent, and that human judgment is not unduly influenced by algorithmic errors or biases.",
+    "keyword_recall": 0.25,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 8.9283
+  },
+  {
+    "case_id": "rq10",
+    "mode": "rag",
+    "question": "Why should automated metrics be kept separate from human review?",
+    "answer": "Automated metrics should be kept separate from human review because they cannot fully judge faithfulness or usefulness. Here's why:\n\n\u2022 Latency measures response time, which is important but doesn't necessarily indicate the quality of the answer.\n\u2022 Keyword recall and source hit rate are estimates that check for expected concepts and documents, but may not capture the nuances of the answer.\n\u2022 These metrics can't fully evaluate the faithfulness or usefulness of the answer, which requires human judgment.\n\nSources: Slide 2; Slide 3",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 8.6559
+  },
+  {
+    "case_id": "rq11",
+    "mode": "no_rag",
+    "question": "What is a hallucination in this course assistant context?",
+    "answer": "In the context of a course assistant like myself, a hallucination refers to a response that is not based on any actual knowledge or information in the course materials. It's a generated answer that is not grounded in any specific textbook, lecture notes, or other course resources. This can happen when I'm faced with a question that is outside of my training data or when I'm trying to fill in gaps in my understanding. I should clearly indicate that my answer is not reliable in such cases.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 7.8792
+  },
+  {
+    "case_id": "rq11",
+    "mode": "rag",
+    "question": "What is a hallucination in this course assistant context?",
+    "answer": "A hallucination occurs when the assistant states information that is not supported by the uploaded materials.\n\nHere are the steps to identify a hallucination:\n\n\u2022 The assistant provides information that is not present in the uploaded materials.\n\u2022 The assistant claims to have knowledge or evidence that is not available in the course materials.\n\u2022 The assistant's response is not based on the actual content of the uploaded materials.\n\nSources: Slide 3: Human Review; Slide 4: Evaluation Sets",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 4: Evaluation and Failure Analysis",
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 8.2262
+  },
+  {
+    "case_id": "rq12",
+    "mode": "no_rag",
+    "question": "What categories of questions should the evaluation set include?",
+    "answer": "Based on general knowledge, an evaluation set should include questions that assess the student's understanding of the material, their ability to apply it, and their critical thinking skills. Some categories of questions that are commonly included in an evaluation set are:\n\n* Multiple-choice questions to test recall and understanding of key concepts\n* Short-answer questions to assess the student's ability to explain and apply the material\n* Essay questions to evaluate the student's critical thinking and analytical skills\n* Problem-solving questions to test the student's ability to apply the material to real-world scenarios\n* Case study questions to assess the student's ability to analyze complex situations and make informed decisions\n\nPlease note that these categories are not specific to any particular course or subject, and the exact questions included in an evaluation set may vary depending on the course materials and learning objectives.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 12.4887
+  },
+  {
+    "case_id": "rq12",
+    "mode": "rag",
+    "question": "What categories of questions should the evaluation set include?",
+    "answer": "The evaluation set should include the following categories of questions:\n\n\u2022 Factual questions\n\u2022 Conceptual questions\n\u2022 Paraphrased questions\n\u2022 Multi-document questions\n\u2022 Follow-up questions\n\u2022 Unanswerable questions\n\nSources: Lecture 4: Evaluation and Failure Analysis; chunk=chunk-0008; location=Slide 4",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 5.544
+  },
+  {
+    "case_id": "rq13",
+    "mode": "no_rag",
+    "question": "What does the final project require?",
+    "answer": "I'm not sure what the final project requires, as I don't have any information about the specific course materials or requirements. My answer is not grounded in any uploaded course sources, and I may not be able to provide an accurate answer. If you're looking for information about the final project, I recommend checking the course syllabus, speaking with your instructor, or reviewing any course materials that have been shared.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 6.5108
+  },
+  {
+    "case_id": "rq13",
+    "mode": "rag",
+    "question": "What does the final project require?",
+    "answer": "The final project requires a working LLM-powered application, source code, documentation, an evaluation methodology, multiple test cases, a discussion of successful and failed responses, limitations, and responsible AI considerations.\n\nHere are the key requirements:\n\n\u2022 A working LLM-powered application\n\u2022 Source code\n\u2022 Documentation\n\u2022 An evaluation methodology\n\u2022 Multiple test cases\n\u2022 A discussion of successful and failed responses\n\u2022 Limitations\n\u2022 Responsible AI considerations\n\nSources: Syllabus and Project Policy; Page 2",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy"
+    ],
+    "latency_seconds": 7.8393
+  },
+  {
+    "case_id": "rq14",
+    "mode": "no_rag",
+    "question": "Why is CourseMate expected to compare retrieval and no-retrieval answers?",
+    "answer": "I'm CourseMate, your AI course assistant.\n\nThe question \"Why is CourseMate expected to compare retrieval and no-retrieval answers?\" is based on a common assumption in natural language processing and information retrieval. In general, retrieval answers are expected to be based on the actual content of the course materials, whereas no-retrieval answers are expected to be based on general knowledge or common sense.\n\nHowever, since I'm in a comparison mode, I don't have access to the specific course materials or retrieval context, which means my answers may not be grounded in the actual content of the course. If the question depends on specific course materials, my no-retrieval answer may be unreliable. I'll do my best to provide helpful and general knowledge-based answers, but please keep in mind that they may not be directly related to the course materials.",
+    "keyword_recall": 0.5,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 13.0659
+  },
+  {
+    "case_id": "rq14",
+    "mode": "rag",
+    "question": "Why is CourseMate expected to compare retrieval and no-retrieval answers?",
+    "answer": "CourseMate is expected to compare retrieval and no-retrieval answers to evaluate its performance and identify areas for improvement. This comparison helps the instructor assess the effectiveness of the retrieval system and make informed decisions about the course material.\n\nHere's why:\n\n\u2022 **Retrieval-Augmented Generation**: The course material emphasizes the importance of retrieval in generating answers (Lecture 2, Page 4). By comparing retrieval and no-retrieval answers, CourseMate can demonstrate its ability to effectively retrieve relevant chunks from the course materials.\n\n\u2022 **Semantic Vector Database**: The use of a semantic vector database as the primary retrieval system (Lecture 2, Page 4) suggests that retrieval accuracy is crucial. Comparing retrieval and no-retrieval answers helps CourseMate identify any weaknesses in its retrieval system.\n\n\u2022 **Comparison for Improvement**: By comparing retrieval and no-retrieval answers, CourseMate can identify areas where it needs to improve its retrieval system, such as reducing false positives or increasing the relevance of retrieved chunks.\n\nSources: Lecture 2: Retrieval-Augmented Generation; Embedding and Vector Store Lab",
+    "keyword_recall": 0.5,
+    "source_hit": 0.5,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Embedding and Vector Store Lab",
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 17.9271
+  },
+  {
+    "case_id": "rq15",
+    "mode": "no_rag",
+    "question": "How do the project policy and evaluation lecture both describe successful CourseMate evaluation?",
+    "answer": "I don't have specific information on how the project policy and evaluation lecture describe successful CourseMate evaluation, as this information is not grounded in my general knowledge database. My training data does not include the specific course materials you're referring to, so I may not be able to provide an accurate answer. If you have more context or details about the course materials, I'd be happy to try and help you find the information you're looking for.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 6.9565
+  },
+  {
+    "case_id": "rq15",
+    "mode": "rag",
+    "question": "How do the project policy and evaluation lecture both describe successful CourseMate evaluation?",
+    "answer": "Here's a concise answer to the question:\n\nSuccessful CourseMate evaluation involves both automated metrics and human review. Automated metrics include:\n\n\u2022 Answer correctness\n\u2022 Retrieval relevance\n\u2022 Citation accuracy\n\u2022 Hallucination rate\n\u2022 Response latency\n\nThese metrics should be kept separate from human review because they cannot fully judge faithfulness or usefulness.\n\nHuman review should inspect:\n\n\u2022 Successful answers\n\u2022 Failed answers\n\u2022 Missing evidence\n\u2022 Unsupported claims\n\nFor unanswerable questions, the safest behavior is to say that the material does not contain enough evidence.\n\nSources: Lecture 4: Evaluation and Failure Analysis; Syllabus and Project Policy",
+    "keyword_recall": 0.667,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 10.237
+  },
+  {
+    "case_id": "rq16",
+    "mode": "no_rag",
+    "question": "How do semantic embeddings and RAG work together in CourseMate?",
+    "answer": "I can provide a general answer to your question, but please note that it's not grounded in uploaded course materials.\n\nIn CourseMate, semantic embeddings and RAG (Recurrent Active Learning) work together to improve the model's understanding of natural language and its applications. Semantic embeddings, such as Word2Vec or GloVe, are used to represent words as vectors in a high-dimensional space, where semantically similar words are closer together. This allows CourseMate to capture nuances in word meanings and relationships.\n\nRAG, on the other hand, is an active learning algorithm that selects the most informative samples for the model to learn from. In CourseMate, RAG is used to select the most relevant questions or prompts for the model to answer, based on the semantic embeddings of the input words.\n\nWhen combined, semantic embeddings and RAG enable CourseMate to better understand the context and intent behind user queries, and to generate more accurate and relevant responses. However, please note that this answer is not specific to the uploaded course materials and may not be entirely accurate or reliable.",
+    "keyword_recall": 0.4,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 17.1215
+  },
+  {
+    "case_id": "rq16",
+    "mode": "rag",
+    "question": "How do semantic embeddings and RAG work together in CourseMate?",
+    "answer": "Here's the answer to your question:\n\nCourseMate combines semantic embeddings and Retrieval-Augmented Generation (RAG) to improve its performance. Here's how they work together:\n\n\u2022 **Semantic Embeddings**: CourseMate uses semantic embeddings to represent text as numerical vectors. These vectors are close together for texts with similar meaning, even if they use different words. This is supported by the Embedding and Vector Store Lab, which states that semantic embeddings should have vectors that are close together for similar meaning texts.\n\u2022 **RAG Pipeline**: The RAG pipeline in CourseMate involves six stages:\n  1. Collecting documents\n  2. Splitting documents into overlapping chunks\n  3. Computing semantic embeddings\n  4. Storing vectors in a vector database\n  5. Retrieving the most relevant chunks for a question\n  6. Generating an answer with source citations\n\u2022 **Integration**: The retrieved chunks are then used to generate an answer, which is based on the context of the retrieved passages. This is supported by the Lecture 2: Retrieval-Augmented Generation page 1, which states that the model should answer from the retrieved context instead of relying only on its training data.\n\nSources: \nLecture 2: Retrieval-Augmented Generation; \nEmbedding and Vector Store Lab",
+    "keyword_recall": 0.6,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Embedding and Vector Store Lab",
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 21.8253
+  },
+  {
+    "case_id": "rq17",
+    "mode": "no_rag",
+    "question": "What safeguards help CourseMate avoid unsupported or unsafe answers?",
+    "answer": "I'm CourseMate, your AI course assistant. To ensure I provide safe and reliable answers, I have several safeguards in place. These include:\n\n1. **Knowledge cutoff**: I'm trained on a vast dataset up to a certain point in time, but I don't have real-time access to current events or updates. This means my answers may not reflect the very latest information or developments in a subject.\n2. **Pre-programmed restrictions**: My developers have implemented rules to prevent me from providing answers that could be considered harmful, misleading, or unsupported by evidence.\n3. **Contextual understanding**: While I strive to understand the context of a question, I may not always grasp the nuances or subtleties of a topic. If I'm unsure or lack sufficient information, I'll do my best to say so or ask for clarification.\n4. **Limitations of my training data**: My training data is sourced from a vast but not exhaustive corpus of texts. If a question relies on very specific or specialized knowledge that's not well-represented in my training data, my answer may be unreliable or incomplete.\n\nPlease keep in mind that my answers are not grounded in uploaded course materials, and I may not always be able to provide the most up-to-date or accurate information. If you're unsure about the reliability of my answer, feel free to ask for clarification or seek additional guidance from your instructor or course materials.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 21.2575
+  },
+  {
+    "case_id": "rq17",
+    "mode": "rag",
+    "question": "What safeguards help CourseMate avoid unsupported or unsafe answers?",
+    "answer": "CourseMate has safeguards to avoid unsupported or unsafe answers:\n\n\u2022 The system prompt remains separate from document text to prevent prompt injection risks (Lecture 5: Responsible AI and Security, Page 1).\n\u2022 CourseMate does not follow instructions inside uploaded documents that ask it to ignore safety rules, reveal secrets, or fabricate citations (Lecture 5: Responsible AI and Security, Page 1).\n\u2022 The assistant is designed to not provide answers that are not supported by the uploaded materials, and for unanswerable questions, the safest behavior is to say that the material does not contain enough evidence (Lecture 4: Evaluation and Failure Analysis, Slide 3).\n\nSources: Lecture 5: Responsible AI and Security; Lecture 4: Evaluation and Failure Analysis",
+    "keyword_recall": 0.4,
+    "source_hit": 0.5,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 4: Evaluation and Failure Analysis",
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 16.3357
+  },
+  {
+    "case_id": "rq18",
+    "mode": "no_rag",
+    "question": "How should CourseMate protect student privacy?",
+    "answer": "Protecting student privacy is crucial. CourseMate should ensure that all interactions with students, including communication, data storage, and sharing, are done in a way that maintains confidentiality and adheres to applicable laws and regulations. This can be achieved by:\n\n- Using secure and encrypted communication channels\n- Limiting access to sensitive student data to authorized personnel\n- Implementing data retention policies that comply with relevant laws and regulations\n- Ensuring that all interactions with students are anonymous and pseudonymous, if possible\n- Regularly reviewing and updating privacy policies to reflect changing laws and best practices\n\nPlease note that this answer is not grounded in uploaded course materials and may not be specific to the course you are taking.",
+    "keyword_recall": 0.25,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 10.6804
+  },
+  {
+    "case_id": "rq18",
+    "mode": "rag",
+    "question": "How should CourseMate protect student privacy?",
+    "answer": "To protect student privacy, CourseMate should:\n\n\u2022 Avoid unnecessary collection of student data.\n\u2022 Treat uploaded course documents as user-provided content.\n\u2022 Not commit API keys, passwords, or private student information to the repository or display them in the interface.\n\nSources: Responsible AI and Security; Page 1",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 4.8993
+  },
+  {
+    "case_id": "rq19",
+    "mode": "no_rag",
+    "question": "Why is prompt injection a risk for RAG systems?",
+    "answer": "Prompt injection is a risk for RAG (Reactive Agent Generation) systems because it can lead to the introduction of malicious or unintended behavior. When a user injects a prompt into an RAG system, it can potentially compromise the system's ability to generate accurate and reliable responses. This is because the injected prompt may not be designed with the system's goals and constraints in mind, which can cause the system to produce responses that are not intended or desired. As a result, prompt injection can lead to security vulnerabilities and undermine the trustworthiness of the RAG system.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 8.9712
+  },
+  {
+    "case_id": "rq19",
+    "mode": "rag",
+    "question": "Why is prompt injection a risk for RAG systems?",
+    "answer": "Prompt injection is a risk for RAG (Reactive AI Generation) systems because the retrieved documents are untrusted input. This means that the system is not able to verify the authenticity or accuracy of the input data, which can lead to potential security vulnerabilities.\n\nHere are the key reasons why prompt injection is a risk:\n\n\u2022 Untrusted input: The system receives input from users, but it does not have control over the content or intent behind the input.\n\u2022 Lack of validation: The system does not perform adequate validation on the input data, which can lead to errors or security breaches.\n\u2022 Potential for manipulation: Users may intentionally or unintentionally provide misleading or malicious input, which can compromise the system's performance or security.\n\nSources: \n# Lecture 5: Responsible AI and Security; chunk=chunk-0009; location=Page 2",
+    "keyword_recall": 0.25,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 13.4271
+  },
+  {
+    "case_id": "rq20",
+    "mode": "no_rag",
+    "question": "What should CourseMate show users to support transparency?",
+    "answer": "To support transparency, CourseMate should clearly indicate when the answer is not grounded in uploaded course materials. This can be done by adding a disclaimer, such as: \"Note: This answer is not based on the uploaded course materials and may not be accurate or relevant to the specific course content.\"",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 4.8772
+  },
+  {
+    "case_id": "rq20",
+    "mode": "rag",
+    "question": "What should CourseMate show users to support transparency?",
+    "answer": "To support transparency, CourseMate should show users the following:\n\n\u2022 Retrieved sources\n\u2022 When information is missing\n\u2022 Remind users to verify important policy decisions with official course materials or the instructor\n\nSources: Lecture 5: Responsible AI and Security; Page 4",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 4.4211
+  },
+  {
+    "case_id": "rq21",
+    "mode": "no_rag",
+    "question": "If the notes do not include an answer, what should the assistant say?",
+    "answer": "If the notes do not include an answer, I can suggest some possible next steps or offer general guidance. However, please note that my response may not be grounded in the specific course materials, and you should verify the accuracy of any information I provide.\n\nIn this case, I can say: \"I couldn't find an answer in the notes. Can you provide more context or clarify what you're trying to understand? I can try to help you brainstorm or offer general guidance on how to approach the topic.\"",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 7.957
+  },
+  {
+    "case_id": "rq21",
+    "mode": "rag",
+    "question": "If the notes do not include an answer, what should the assistant say?",
+    "answer": "If the notes do not include an answer, the assistant should say: \"The material does not contain enough evidence to provide a correct answer.\"",
+    "keyword_recall": 0.5,
+    "source_hit": 0.5,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 2.4824
+  },
+  {
+    "case_id": "rq22",
+    "mode": "no_rag",
+    "question": "How can students check whether an answer is grounded?",
+    "answer": "When checking whether an answer is grounded, students can consider the following:\n\n1. **Source credibility**: Is the source reputable and trustworthy? Is it a peer-reviewed publication, academic journal, or a well-established online resource?\n2. **Methodology and research**: Is the research methodology sound? Are the conclusions supported by evidence and data?\n3. **Contextualization**: Is the answer relevant to the specific topic or question being asked? Does it take into account the broader context and nuances of the subject?\n4. **Citation and references**: Are sources properly cited and referenced? This can help students verify the accuracy of the information.\n5. **Critical thinking**: Does the answer demonstrate critical thinking and analysis? Are assumptions and biases acknowledged?\n\nIf the question depends on specific course materials, the answer may be unreliable, as it is not grounded in the provided context.",
+    "keyword_recall": 0.25,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 12.8934
+  },
+  {
+    "case_id": "rq22",
+    "mode": "rag",
+    "question": "How can students check whether an answer is grounded?",
+    "answer": "To check whether an answer is grounded, students can follow these steps:\n\n\u2022 Verify the source of the information: Check if the answer is supported by a credible source within the course materials.\n\u2022 Look for citations: Check if the answer is properly cited with source titles from the course syllabus or project policy.\n\u2022 Compare with CourseMate's knowledge: Compare the answer with the knowledge provided by CourseMate to ensure it aligns with the expected outcomes.\n\u2022 Evaluate the context: Consider the context in which the answer is being asked and ensure it aligns with the course topics and objectives.\n\nSources: Syllabus and Project Policy; CourseMate Sample Course",
+    "keyword_recall": 0.5,
+    "source_hit": 0.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy"
+    ],
+    "latency_seconds": 9.9249
+  },
+  {
+    "case_id": "rq23",
+    "mode": "no_rag",
+    "question": "Follow-up after asking about RAG stages: Why does chunk overlap matter?",
+    "answer": "Chunk overlap matters in RAG (Revised Additive Grammar) stages because it affects the way the language is represented and analyzed. In RAG, chunks are the basic units of meaning, and overlap between chunks can lead to ambiguity and complexity in the representation.\n\nWhen chunks overlap, it means that one chunk contains part of another chunk, which can make it difficult to identify the boundaries between them. This can lead to issues with parsing, semantic interpretation, and overall understanding of the language.\n\nIn the context of RAG stages, chunk overlap can make it challenging to identify the different stages of language development, as the boundaries between chunks can become blurred. This can impact the accuracy of the analysis and the ability to identify the characteristics of each stage.\n\nPlease note that this answer is not grounded in uploaded course materials, and the specific requirements of RAG stages may vary depending on the course or context in which they are being used.",
+    "keyword_recall": 0.333,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 14.0489
+  },
+  {
+    "case_id": "rq23",
+    "mode": "rag",
+    "question": "Follow-up after asking about RAG stages: Why does chunk overlap matter?",
+    "answer": "Chunk overlap matters in a RAG system because it helps preserve meaning across section boundaries. Here's why:\n\n\u2022 It ensures that the model can understand the context of a question even when it spans multiple sections or topics.\n\u2022 By overlapping chunks, the model can better capture the relationships between different parts of the question and the relevant passages in the document collection.\n\u2022 This helps the model to generate more accurate and relevant answers that take into account the full context of the question.\n\nSources: Page 2; Lecture 2: Retrieval-Augmented Generation",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 2: Retrieval-Augmented Generation"
+    ],
+    "latency_seconds": 8.3959
+  },
+  {
+    "case_id": "rq24",
+    "mode": "no_rag",
+    "question": "Follow-up after asking about evaluation metrics: Why are human notes still needed?",
+    "answer": "I can provide a general answer, but please note that it's not based on the specific course materials I've been trained on.\n\nHuman notes are still needed because they offer a unique perspective and can provide context that automated evaluation tools might miss. While AI can analyze and score assignments, it may not fully understand the nuances of the student's work, such as their thought process, creativity, or intent. Human notes can help instructors provide more detailed and personalized feedback, which is essential for student learning and improvement.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 8.3338
+  },
+  {
+    "case_id": "rq24",
+    "mode": "rag",
+    "question": "Follow-up after asking about evaluation metrics: Why are human notes still needed?",
+    "answer": "Here's a concise answer in student-friendly language:\n\nHuman notes are still needed because automated metrics, such as keyword recall and source hit rate, can't fully judge the faithfulness or usefulness of the assistant's answers. These metrics can only estimate certain aspects, like relevance and accuracy, but can't capture the nuances of the human review process.\n\nHere's a bullet-point summary:\n\n\u2022 Automated metrics can't fully judge faithfulness or usefulness.\n\u2022 Human review is needed to inspect successful and failed answers, missing evidence, and unsupported claims.\n\u2022 Human notes help ensure that the assistant's answers align with the reference answer and expected sources.\n\nSources:\nLecture 4: Evaluation and Failure Analysis; Slide 3; Lecture 4: Evaluation and Failure Analysis; Slide 4",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 12.434
+  },
+  {
+    "case_id": "rq25",
+    "mode": "no_rag",
+    "question": "What room is the final exam in?",
+    "answer": "I'm not aware of the specific course materials or room assignments for the final exam. Since I don't have any information about the course or its schedule, I can't provide a reliable answer. If you're looking for information about the final exam room, I recommend checking with the course instructor, teaching assistant, or the course website for the most up-to-date information.",
+    "keyword_recall": 0.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 5.9408
+  },
+  {
+    "case_id": "rq25",
+    "mode": "rag",
+    "question": "What room is the final exam in?",
+    "answer": "I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.1495
+  },
+  {
+    "case_id": "rq26",
+    "mode": "no_rag",
+    "question": "What is the instructor's phone number?",
+    "answer": "I'm not able to provide the instructor's phone number as this information is not publicly available and is not part of my general knowledge database. The answer may also depend on specific course materials that I don't have access to. If you need to contact the instructor, I recommend checking the course website, email, or contacting the department directly for more information.",
+    "keyword_recall": 0.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 5.8003
+  },
+  {
+    "case_id": "rq26",
+    "mode": "rag",
+    "question": "What is the instructor's phone number?",
+    "answer": "I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.1367
+  },
+  {
+    "case_id": "rq27",
+    "mode": "no_rag",
+    "question": "Which textbook chapter is due next Friday?",
+    "answer": "I'm not able to provide a specific answer to your question about the textbook chapter due next Friday, as I don't have any information about the course materials or schedule. My response is not grounded in any uploaded course sources, and I may not have the most up-to-date information.\n\nIf you're looking for information about the course schedule, I recommend checking with your instructor or reviewing the course syllabus. They should be able to provide you with the most accurate and up-to-date information about upcoming deadlines and assignments.",
+    "keyword_recall": 0.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 8.3703
+  },
+  {
+    "case_id": "rq27",
+    "mode": "rag",
+    "question": "Which textbook chapter is due next Friday?",
+    "answer": "I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.1549
+  },
+  {
+    "case_id": "rq28",
+    "mode": "no_rag",
+    "question": "What is tomorrow's cafeteria menu?",
+    "answer": "I don't have any information about tomorrow's cafeteria menu, as I'm a course assistant without access to real-time schedules or external information. My answer may not be reliable, and I recommend checking with the school or cafeteria staff for the most up-to-date information.",
+    "keyword_recall": 0.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 4.8467
+  },
+  {
+    "case_id": "rq28",
+    "mode": "rag",
+    "question": "What is tomorrow's cafeteria menu?",
+    "answer": "I could not find enough relevant evidence in the uploaded course materials to answer that reliably. Try uploading the relevant document or rephrasing the question with more course-specific details.",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [],
+    "latency_seconds": 0.1424
+  },
+  {
+    "case_id": "rq29",
+    "mode": "no_rag",
+    "question": "What should be recorded for each evaluation example?",
+    "answer": "For each evaluation example, it's generally recommended to record the following:\n\n* The specific task or criteria being evaluated\n* The student's work or submission\n* The criteria or standards used to assess the work\n* The evaluation results (e.g. pass/fail, score, comments)\n* Any relevant context or background information\n\nThis information can help provide a clear and transparent record of the evaluation process, which can be useful for grading, feedback, and future reference.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 7.6195
+  },
+  {
+    "case_id": "rq29",
+    "mode": "rag",
+    "question": "What should be recorded for each evaluation example?",
+    "answer": "For each evaluation example, the following should be recorded:\n\n\u2022 Reference answer\n\u2022 Expected sources\n\u2022 Actual retrieved sources\n\u2022 Model answer\n\u2022 Reviewer notes\n\nSources: Evaluation and Failure Analysis; Slide 4",
+    "keyword_recall": 1.0,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "CourseMate Sample Course: Syllabus and Project Policy",
+      "Lecture 4: Evaluation and Failure Analysis"
+    ],
+    "latency_seconds": 3.8695
+  },
+  {
+    "case_id": "rq30",
+    "mode": "no_rag",
+    "question": "Who enforces tool permissions in a safe LLM application?",
+    "answer": "I'm not familiar with the specific details of a safe LLM application, and I couldn't find any general information on who enforces tool permissions in such a context. My answer may not be reliable, as it's not grounded in uploaded course materials. If you have any more context or information about the question, I'd be happy to try and help further.",
+    "keyword_recall": 0.0,
+    "source_hit": 0.0,
+    "retrieved_sources": [],
+    "latency_seconds": 6.714
+  },
+  {
+    "case_id": "rq30",
+    "mode": "rag",
+    "question": "Who enforces tool permissions in a safe LLM application?",
+    "answer": "To enforce tool permissions in a safe LLM application, the application code should:\n\n1. Propose a tool call to the language model.\n2. Enforce boundaries by validating tool arguments and ensuring read-only permissions when appropriate.\n\nThis approach ensures that the application maintains control over the tool's access and prevents potential security risks.\n\nSources: \nPage 3; Page 4",
+    "keyword_recall": 0.5,
+    "source_hit": 1.0,
+    "retrieved_sources": [
+      "Lecture 5: Responsible AI and Security"
+    ],
+    "latency_seconds": 6.1686
+  }
+]

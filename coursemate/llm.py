@@ -68,10 +68,20 @@ class OllamaLLM:
     model: str = "llama3.2:3b"
     base_url: str = "http://localhost:11434"
     name: str = "ollama"
+    temperature: float = 0.2
+    num_predict: int = 384
 
     def generate(self, prompt: str) -> str:
         url = f"{self.base_url.rstrip('/')}/api/generate"
-        payload = {"model": self.model, "prompt": prompt, "stream": False}
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "stream": False,
+            "options": {
+                "temperature": self.temperature,
+                "num_predict": self.num_predict,
+            },
+        }
         request = urllib.request.Request(
             url,
             data=json.dumps(payload).encode("utf-8"),
@@ -206,7 +216,8 @@ def build_prompt(
         f"""
         You are CourseMate, an AI course-material assistant.
         Answer only from the provided course context. If the context is missing
-        or insufficient, say that you do not have enough evidence.
+        or insufficient, say exactly what cannot be determined from the uploaded
+        materials.
 
         CONVERSATION HISTORY:
         {history}
@@ -219,6 +230,7 @@ def build_prompt(
 
         RESPONSE REQUIREMENTS:
         - Give a concise answer in student-friendly language.
+        - Use bullets or numbered steps for multi-part or process questions.
         - Cite the course source titles that support the answer.
         - End with a line formatted as: Sources: <source title 1>; <source title 2>
         - Do not invent policies, deadlines, formulas, or definitions.

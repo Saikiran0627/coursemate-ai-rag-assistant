@@ -53,6 +53,8 @@ class SearchResult:
 class TfidfVectorStore:
     """A dependency-free vector store suitable for a small course corpus."""
 
+    backend_name = "tfidf"
+
     def __init__(self, chunks: list[Chunk], idf: dict[str, float], vectors: list[dict[str, float]]):
         self.chunks = chunks
         self.idf = idf

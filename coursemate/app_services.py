@@ -11,7 +11,7 @@ from coursemate.documents import Document
 from coursemate.evaluation import EvaluationCase, EvaluationResult
 from coursemate.ingestion import UploadedDocument
 from coursemate.llm import LanguageModel
-from coursemate.rag import Answer, CourseMateAssistant
+from coursemate.rag import Answer, CourseMateAssistant, SEMANTIC_RELEVANCE_THRESHOLD
 from coursemate.semantic_store import ChromaSemanticVectorStore, DEFAULT_EMBEDDING_MODEL
 
 
@@ -36,6 +36,7 @@ def build_semantic_assistant(
     embedding_model: str = DEFAULT_EMBEDDING_MODEL,
     chunk_size: int = 160,
     overlap: int = 35,
+    relevance_threshold: float = SEMANTIC_RELEVANCE_THRESHOLD,
 ) -> CorpusBuildResult:
     """Build a Chroma-backed assistant from uploaded documents."""
 
@@ -48,7 +49,7 @@ def build_semantic_assistant(
         reset=True,
     )
     return CorpusBuildResult(
-        assistant=CourseMateAssistant(store, llm),
+        assistant=CourseMateAssistant(store, llm, relevance_threshold=relevance_threshold),
         chunks=chunks,
         document_count=len(documents),
     )
@@ -61,6 +62,7 @@ def timed_answer(
     top_k: int,
     use_rag: bool,
     chat_history: list[dict[str, str]] | None = None,
+    relevance_threshold: float | None = None,
 ) -> TimedAnswer:
     started = time.perf_counter()
     answer = assistant.answer(
@@ -68,6 +70,7 @@ def timed_answer(
         top_k=top_k,
         use_rag=use_rag,
         chat_history=chat_history,
+        relevance_threshold=relevance_threshold,
     )
     return TimedAnswer(answer=answer, latency_seconds=round(time.perf_counter() - started, 3))
 
@@ -92,7 +95,7 @@ def hallucination_risk(result: EvaluationResult) -> str:
 
     if result.mode == "no_rag":
         return "High: answer was produced without retrieved course evidence."
-    if result.source_hit < 1.0:
+    if result.source_hit is not None and result.source_hit < 1.0:
         return "Medium: expected source was not fully retrieved."
     if result.keyword_recall < 0.5:
         return "Medium: answer missed many expected concepts."
