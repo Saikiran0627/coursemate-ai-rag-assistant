@@ -15,7 +15,7 @@ from coursemate.vector_store import SearchResult, TfidfVectorStore
 
 SEMANTIC_RELEVANCE_THRESHOLD = 0.29
 TFIDF_RELEVANCE_THRESHOLD = 0.18
-DEFAULT_MAX_EVIDENCE_CHUNKS = 3
+DEFAULT_MAX_EVIDENCE_CHUNKS = 4
 
 
 @dataclass(frozen=True)
@@ -91,7 +91,8 @@ class CourseMateAssistant:
             )
 
         retrieval_query = build_retrieval_query(question, chat_history)
-        retrieved = self.vector_store.search(retrieval_query, top_k=top_k) if use_rag else []
+        retrieval_k = max(top_k * 3, top_k) if use_rag else top_k
+        retrieved = self.vector_store.search(retrieval_query, top_k=retrieval_k) if use_rag else []
         if use_rag:
             retrieved = _filter_relevant(
                 retrieved,
@@ -190,7 +191,26 @@ def _filter_relevant(
         # chunks need lexical support so citations stay tied to the user's question.
         if result.score >= threshold + 0.20 or _lexical_overlap(query, result.chunk.text) >= 2:
             filtered.append(result)
-    return filtered[:max_chunks]
+    return _diversify_sources(filtered, max_chunks=max_chunks)
+
+
+def _diversify_sources(results: list[SearchResult], *, max_chunks: int) -> list[SearchResult]:
+    selected: list[SearchResult] = []
+    selected_titles: set[str] = set()
+    for result in results:
+        if result.chunk.title in selected_titles:
+            continue
+        selected.append(result)
+        selected_titles.add(result.chunk.title)
+        if len(selected) == max_chunks:
+            return selected
+    for result in results:
+        if result in selected:
+            continue
+        selected.append(result)
+        if len(selected) == max_chunks:
+            break
+    return selected
 
 
 def _chunk_location(text: str) -> str:

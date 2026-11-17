@@ -427,10 +427,19 @@ def render_evaluation_tab() -> None:
                     "category": case.category if case else "",
                     "mode": result.mode,
                     "keyword_recall": result.keyword_recall,
-                    "source_hit": result.source_hit,
+                    "source_hit": result.source_hit if result.source_hit_applicable else "N/A",
+                    "correct_refusal": (
+                        result.correct_refusal
+                        if result.correct_refusal is not None
+                        else "N/A"
+                    ),
                     "latency_seconds": result.latency_seconds,
                     "retrieved_sources": ", ".join(result.retrieved_sources),
                     "hallucination_risk": hallucination_risk(result),
+                    "human_factual_correctness": result.human_factual_correctness,
+                    "human_citation_support": result.human_citation_support,
+                    "human_completeness": result.human_completeness,
+                    "human_notes": result.human_notes,
                     "reference_answer": case.reference_answer if case else "",
                     "answer": result.answer,
                 }

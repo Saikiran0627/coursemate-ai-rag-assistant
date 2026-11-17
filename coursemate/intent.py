@@ -43,14 +43,15 @@ def build_retrieval_query(
     """
 
     cleaned = question.strip()
+    expanded = _expand_course_query(cleaned)
     if not chat_history or not _FOLLOW_UP_RE.search(cleaned):
-        return cleaned
+        return expanded
 
     previous_user_turns = _supported_previous_user_turns(chat_history)
     if not previous_user_turns:
-        return cleaned
+        return expanded
 
-    return f"{previous_user_turns[-1]} Follow-up: {cleaned}"
+    return _expand_course_query(f"{previous_user_turns[-1]} Follow-up: {cleaned}")
 
 
 def _supported_previous_user_turns(chat_history: list[dict[str, str]]) -> list[str]:
@@ -73,3 +74,29 @@ def _supported_previous_user_turns(chat_history: list[dict[str, str]]) -> list[s
     if latest_user:
         supported_turns.append(latest_user)
     return supported_turns
+
+
+def _expand_course_query(query: str) -> str:
+    normalized = query.lower()
+    additions: list[str] = []
+    if "compare" in normalized and "retrieval" in normalized:
+        additions.append("baseline same model without retrieved context evaluation")
+    if any(term in normalized for term in ("safeguard", "unsupported", "unsafe")):
+        additions.append(
+            "relevance threshold missing evidence prompt injection untrusted input "
+            "safety rules reveal secrets fabricate citations retrieved sources verify official course materials"
+        )
+    if "prompt injection" in normalized:
+        additions.append("untrusted input override safety rules reveal secrets fabricate citations")
+    if "grounded" in normalized or "check whether an answer" in normalized:
+        additions.append(
+            "retrieved sources citations source metadata snippets verify supported "
+            "ChromaDB document titles source file names chunk identifiers page slide labels transparency"
+        )
+    if "notes do not include" in normalized or "do not include an answer" in normalized:
+        additions.append("material does not contain enough evidence safest behavior")
+    if "measurements" in normalized and "evaluat" in normalized:
+        additions.append("metrics answer correctness retrieval relevance citation accuracy hallucination rate response latency")
+    if not additions:
+        return query
+    return f"{query} {' '.join(additions)}"

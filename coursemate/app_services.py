@@ -95,7 +95,7 @@ def hallucination_risk(result: EvaluationResult) -> str:
 
     if result.mode == "no_rag":
         return "High: answer was produced without retrieved course evidence."
-    if result.source_hit < 1.0:
+    if result.source_hit is not None and result.source_hit < 1.0:
         return "Medium: expected source was not fully retrieved."
     if result.keyword_recall < 0.5:
         return "Medium: answer missed many expected concepts."

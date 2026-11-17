@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from coursemate.evaluation import evaluate, load_cases, summarize
+from coursemate.evaluation import EvaluationCase
 from coursemate.llm import DeterministicCourseLLM
 from coursemate.rag import CourseMateAssistant
 
@@ -185,5 +186,32 @@ def test_evaluation_shows_rag_improves_source_hit():
 
     summary = summarize(evaluate(assistant, cases))
 
-    assert summary["rag"]["avg_source_hit"] > summary["no_rag"]["avg_source_hit"]
+    assert summary["rag"]["avg_source_hit"] is not None
+    assert summary["no_rag"]["avg_source_hit"] is None
     assert summary["rag"]["avg_keyword_recall"] > summary["no_rag"]["avg_keyword_recall"]
+
+
+def test_evaluation_marks_no_rag_source_hit_not_applicable_and_scores_refusal():
+    assistant = CourseMateAssistant.from_directory(
+        ROOT / "data" / "course_materials",
+        DeterministicCourseLLM(),
+    )
+    cases = [
+        EvaluationCase(
+            id="missing",
+            question="What is tomorrow's cafeteria menu?",
+            expected_keywords=["could not find enough relevant evidence"],
+            expected_sources=[],
+            reference_answer="The materials do not contain cafeteria menu information.",
+            category="unanswerable",
+        )
+    ]
+
+    results = evaluate(assistant, cases)
+    no_rag = next(result for result in results if result.mode == "no_rag")
+    rag = next(result for result in results if result.mode == "rag")
+
+    assert no_rag.source_hit is None
+    assert no_rag.source_hit_applicable is False
+    assert rag.source_hit_applicable is True
+    assert rag.correct_refusal is True
