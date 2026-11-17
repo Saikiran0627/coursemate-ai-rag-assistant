@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tempfile
 import uuid
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -115,6 +116,18 @@ def render_sidebar():
 
         top_k = st.slider("Retrieved chunks", min_value=1, max_value=8, value=4)
         st.session_state["top_k"] = top_k
+        relevance_threshold = st.slider(
+            "Evidence relevance threshold",
+            min_value=0.0,
+            max_value=0.8,
+            value=0.30,
+            step=0.01,
+            help=(
+                "Chunks below this calibrated similarity score are not used as evidence. "
+                "Raise it to be stricter; lower it if valid uploaded material is missed."
+            ),
+        )
+        st.session_state["relevance_threshold"] = relevance_threshold
 
         if st.button("Build / refresh semantic index", type="primary"):
             build_index(llm)
@@ -175,7 +188,12 @@ def build_index(llm) -> None:
     persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
     with st.spinner("Embedding documents and building ChromaDB index..."):
         try:
-            result = build_semantic_assistant(docs, llm, persist_dir=persist_dir)
+            result = build_semantic_assistant(
+                docs,
+                llm,
+                persist_dir=persist_dir,
+                relevance_threshold=st.session_state["relevance_threshold"],
+            )
         except Exception as exc:
             st.error(f"Could not build semantic index: {exc}")
             return
@@ -228,13 +246,15 @@ def render_chat_tab() -> None:
                     top_k=st.session_state["top_k"],
                     use_rag=True,
                     chat_history=history,
+                    relevance_threshold=st.session_state["relevance_threshold"],
                 )
             except Exception as exc:
                 st.error(f"Answer generation failed: {exc}")
                 return
         st.markdown(timed.answer.answer)
         st.caption(f"Response time: {timed.latency_seconds}s")
-        render_sources(timed.answer.retrieved)
+        if timed.answer.retrieved:
+            render_sources(timed.answer.retrieved)
 
     st.session_state["messages"].append(
         {
@@ -268,6 +288,7 @@ def render_comparison_tab() -> None:
                     top_k=st.session_state["top_k"],
                     use_rag=False,
                     chat_history=history,
+                    relevance_threshold=st.session_state["relevance_threshold"],
                 )
                 st.markdown(no_rag.answer.answer)
                 st.caption(f"Response time: {no_rag.latency_seconds}s")
@@ -282,10 +303,12 @@ def render_comparison_tab() -> None:
                     top_k=st.session_state["top_k"],
                     use_rag=True,
                     chat_history=history,
+                    relevance_threshold=st.session_state["relevance_threshold"],
                 )
                 st.markdown(rag.answer.answer)
                 st.caption(f"Response time: {rag.latency_seconds}s")
-                render_sources(rag.answer.retrieved)
+                if rag.answer.retrieved:
+                    render_sources(rag.answer.retrieved)
             except Exception as exc:
                 st.error(f"RAG answer failed: {exc}")
 
@@ -401,17 +424,26 @@ def render_documents_tab() -> None:
 
 def render_sources(sources) -> None:
     if not sources:
-        st.info("No sources retrieved.")
         return
     with st.expander("Sources and retrieved chunks", expanded=False):
         for item in sources:
-            st.markdown(f"**{item.chunk.title}** · `{item.chunk.chunk_id}` · score `{item.score:.3f}`")
+            location = _chunk_location(item.chunk.text)
+            location_part = f" · {location}" if location else ""
+            st.markdown(
+                f"**{item.chunk.title}**{location_part} · `{item.chunk.chunk_id}` · "
+                f"score `{item.score:.3f}`"
+            )
             st.caption(item.chunk.source_path)
             st.write(item.chunk.text)
 
 
 def _split_csv(value: str) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _chunk_location(text: str) -> str:
+    match = re.search(r"\b(Page|Slide)\s+(\d+)\b", text)
+    return f"{match.group(1)} {match.group(2)}" if match else ""
 
 
 if __name__ == "__main__":

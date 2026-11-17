@@ -4,11 +4,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import re
 
 from coursemate.chunking import chunk_documents
 from coursemate.documents import load_documents
+from coursemate.intent import build_retrieval_query, conversational_response
 from coursemate.llm import LanguageModel, build_prompt
 from coursemate.vector_store import SearchResult, TfidfVectorStore
+
+
+DEFAULT_RELEVANCE_THRESHOLD = 0.18
 
 
 @dataclass(frozen=True)
@@ -21,14 +26,23 @@ class Answer:
     retrieved: list[SearchResult]
     prompt: str
     model_name: str
+    retrieval_query: str = ""
+    evidence_status: str = "not_checked"
 
 
 class CourseMateAssistant:
     """RAG assistant that can answer with or without retrieval."""
 
-    def __init__(self, vector_store: TfidfVectorStore, llm: LanguageModel):
+    def __init__(
+        self,
+        vector_store: TfidfVectorStore,
+        llm: LanguageModel,
+        *,
+        relevance_threshold: float = DEFAULT_RELEVANCE_THRESHOLD,
+    ):
         self.vector_store = vector_store
         self.llm = llm
+        self.relevance_threshold = relevance_threshold
 
     @classmethod
     def from_directory(
@@ -50,8 +64,44 @@ class CourseMateAssistant:
         top_k: int = 4,
         use_rag: bool = True,
         chat_history: list[dict[str, str]] | None = None,
+        relevance_threshold: float | None = None,
     ) -> Answer:
-        retrieved = self.vector_store.search(question, top_k=top_k) if use_rag else []
+        direct_response = conversational_response(question)
+        if direct_response is not None:
+            return Answer(
+                question=question,
+                answer=direct_response,
+                mode="conversation",
+                retrieved=[],
+                prompt="",
+                model_name="coursemate-intent-handler",
+                retrieval_query="",
+                evidence_status="not_needed",
+            )
+
+        retrieval_query = build_retrieval_query(question, chat_history)
+        retrieved = self.vector_store.search(retrieval_query, top_k=top_k) if use_rag else []
+        if use_rag:
+            retrieved = _filter_relevant(
+                retrieved,
+                query=retrieval_query,
+                threshold=self.relevance_threshold if relevance_threshold is None else relevance_threshold,
+            )
+            if not retrieved:
+                return Answer(
+                    question=question,
+                    answer=(
+                        "I could not find enough relevant evidence in the uploaded course materials "
+                        "to answer that reliably. Try uploading the relevant document or rephrasing "
+                        "the question with more course-specific details."
+                    ),
+                    mode="rag",
+                    retrieved=[],
+                    prompt="",
+                    model_name=self.llm.name,
+                    retrieval_query=retrieval_query,
+                    evidence_status="insufficient",
+                )
         context_blocks = [_format_context(result) for result in retrieved]
         prompt = build_prompt(
             question,
@@ -67,6 +117,8 @@ class CourseMateAssistant:
             retrieved=retrieved,
             prompt=prompt,
             model_name=self.llm.name,
+            retrieval_query=retrieval_query if use_rag else "",
+            evidence_status="sufficient" if use_rag else "not_checked",
         )
 
     def compare(
@@ -96,7 +148,64 @@ class CourseMateAssistant:
 
 def _format_context(result: SearchResult) -> str:
     chunk = result.chunk
+    location = _chunk_location(chunk.text)
+    location_part = f"; location={location}" if location else ""
     return (
-        f"[Source: {chunk.title}; chunk={chunk.chunk_id}; score={result.score:.3f}]\n"
+        f"[Source: {chunk.title}; chunk={chunk.chunk_id}{location_part}; score={result.score:.3f}]\n"
         f"{chunk.text}"
     )
+
+
+def _filter_relevant(results: list[SearchResult], *, query: str, threshold: float) -> list[SearchResult]:
+    if not results:
+        return []
+    top_score = results[0].score
+    if top_score < threshold:
+        return []
+    filtered: list[SearchResult] = []
+    for result in results:
+        if result.score < threshold:
+            continue
+        # Very strong semantic matches can pass without keyword overlap; borderline
+        # chunks need lexical support so citations stay tied to the user's question.
+        if result.score >= threshold + 0.20 or _lexical_overlap(query, result.chunk.text) >= 2:
+            filtered.append(result)
+    return filtered
+
+
+def _chunk_location(text: str) -> str:
+    match = re.search(r"\b(Page|Slide)\s+(\d+)\b", text)
+    return f"{match.group(1)} {match.group(2)}" if match else ""
+
+
+def _lexical_overlap(query: str, text: str) -> int:
+    stopwords = {
+        "a",
+        "an",
+        "and",
+        "are",
+        "for",
+        "from",
+        "how",
+        "in",
+        "is",
+        "it",
+        "of",
+        "on",
+        "or",
+        "the",
+        "to",
+        "what",
+        "when",
+        "where",
+        "which",
+        "why",
+        "with",
+    }
+    query_terms = {
+        term.lower()
+        for term in re.findall(r"[A-Za-z][A-Za-z0-9'-]+", query)
+        if term.lower() not in stopwords
+    }
+    text_terms = {term.lower() for term in re.findall(r"[A-Za-z][A-Za-z0-9'-]+", text)}
+    return len(query_terms & text_terms)

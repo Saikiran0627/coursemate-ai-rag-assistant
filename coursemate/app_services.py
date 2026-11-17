@@ -36,6 +36,7 @@ def build_semantic_assistant(
     embedding_model: str = DEFAULT_EMBEDDING_MODEL,
     chunk_size: int = 160,
     overlap: int = 35,
+    relevance_threshold: float = 0.30,
 ) -> CorpusBuildResult:
     """Build a Chroma-backed assistant from uploaded documents."""
 
@@ -48,7 +49,7 @@ def build_semantic_assistant(
         reset=True,
     )
     return CorpusBuildResult(
-        assistant=CourseMateAssistant(store, llm),
+        assistant=CourseMateAssistant(store, llm, relevance_threshold=relevance_threshold),
         chunks=chunks,
         document_count=len(documents),
     )
@@ -61,6 +62,7 @@ def timed_answer(
     top_k: int,
     use_rag: bool,
     chat_history: list[dict[str, str]] | None = None,
+    relevance_threshold: float | None = None,
 ) -> TimedAnswer:
     started = time.perf_counter()
     answer = assistant.answer(
@@ -68,6 +70,7 @@ def timed_answer(
         top_k=top_k,
         use_rag=use_rag,
         chat_history=chat_history,
+        relevance_threshold=relevance_threshold,
     )
     return TimedAnswer(answer=answer, latency_seconds=round(time.perf_counter() - started, 3))
 

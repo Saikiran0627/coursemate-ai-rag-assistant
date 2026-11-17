@@ -86,6 +86,12 @@ In the browser:
 6. Use **Evaluation** to inspect test cases, answer quality, source relevance,
    hallucination-risk analysis, and response times.
 
+CourseMate handles simple greetings and thanks directly without retrieval, so
+messages such as "Hello" do not produce irrelevant citations. The sidebar also
+includes an **Evidence relevance threshold** control. Chunks below that
+similarity threshold are not used as evidence, and CourseMate will say when the
+uploaded materials do not contain enough support for an answer.
+
 If Ollama is unavailable, deterministic demo mode can be used to verify
 retrieval and UI behavior, but it is not a substitute for testing real local LLM
 responses.
