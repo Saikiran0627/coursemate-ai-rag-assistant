@@ -36,24 +36,26 @@ REALISTIC_EVAL_FILE = Path("data/evaluation/realistic_questions.jsonl")
 DEFAULT_SAMPLE_DIR = Path("data/course_materials")
 
 
-st.set_page_config(page_title="CourseMate", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="CourseMate RAG Assistant", page_icon="🎓", layout="wide")
 
 
 def main() -> None:
     init_state()
-    inject_theme()
+    render_header()
     llm = render_sidebar()
-    st.session_state["active_llm"] = llm
     attach_llm(llm)
 
-    render_app_header()
-    chat_tab, compare_tab, eval_tab = st.tabs(["AI Chat", "RAG Comparison", "Evaluation"])
+    chat_tab, compare_tab, eval_tab, docs_tab = st.tabs(
+        ["💬 Chat", "⚖️ RAG Comparison", "📊 Evaluation", "📚 Documents"]
+    )
     with chat_tab:
         render_chat_tab()
     with compare_tab:
         render_comparison_tab()
     with eval_tab:
         render_evaluation_tab()
+    with docs_tab:
+        render_documents_tab()
 
 
 def init_state() -> None:
@@ -65,175 +67,83 @@ def init_state() -> None:
     st.session_state.setdefault("last_index_signature", None)
 
 
-def inject_theme() -> None:
-    st.markdown(
-        """
-        <style>
-        :root {
-            --cm-navy: #0b1f33;
-            --cm-teal: #00a7a5;
-            --cm-teal-dark: #087f7d;
-            --cm-bg: #f6f8fb;
-            --cm-card: #ffffff;
-            --cm-border: #dbe5ef;
-            --cm-muted: #5d6b7a;
-        }
-        .stApp {
-            background: #f7f9fc;
-            color: var(--cm-navy);
-        }
-        section[data-testid="stSidebar"] {
-            background: #0b1f33;
-        }
-        section[data-testid="stSidebar"] * {
-            color: #eef7fb;
-        }
-        section[data-testid="stSidebar"] .stButton button {
-            border: 1px solid rgba(255,255,255,.22);
-            background: rgba(255,255,255,.08);
-            color: #ffffff;
-        }
-        .cm-card {
-            border: 1px solid var(--cm-border);
-            border-radius: 16px;
-            padding: 1rem;
-            background: #ffffff;
-            box-shadow: 0 8px 24px rgba(11,31,51,.06);
-            min-height: 100%;
-        }
-        .cm-card h3 {
-            margin-top: 0;
-            color: var(--cm-navy);
-        }
-        .cm-muted {
-            color: var(--cm-muted);
-        }
-        div[data-testid="stMetric"] {
-            background: rgba(255,255,255,.9);
-            border: 1px solid var(--cm-border);
-            border-radius: 14px;
-            padding: .75rem;
-        }
-        .stButton button[kind="primary"] {
-            background: var(--cm-teal);
-            border: 1px solid var(--cm-teal-dark);
-            color: white;
-            border-radius: 12px;
-        }
-        .stTabs [data-baseweb="tab-list"] {
-            gap: .35rem;
-        }
-        .stTabs [data-baseweb="tab"] {
-            border-radius: 12px;
-        }
-        h1, h2, h3 {
-            color: var(--cm-navy);
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def render_app_header() -> None:
-    st.title("CourseMate")
+def render_header() -> None:
+    st.title("🎓 CourseMate – AI Course Material Assistant")
     st.caption(
-        "Ask questions about uploaded course materials with semantic RAG, local Ollama responses, "
-        "and transparent source citations."
+        "Upload course materials, ask follow-up questions, compare RAG vs no-RAG answers, "
+        "and inspect evaluation results with source citations."
     )
 
 
 def render_sidebar():
     with st.sidebar:
-        st.markdown("## CourseMate")
-        st.caption("AI course material assistant")
+        st.header("Setup")
+        backend = st.radio("LLM backend", ["Ollama", "Deterministic demo"], index=0)
+        model_name = st.text_input("Ollama model", value=DEFAULT_MODEL)
+
+        if backend == "Ollama":
+            models = list_ollama_models()
+            if models:
+                st.success("Ollama is reachable.")
+                if model_name in models:
+                    st.info(f"Model available: {model_name}")
+                else:
+                    st.warning(
+                        f"{model_name} is not installed. Available models: {', '.join(models)}"
+                    )
+                if st.button("Run Ollama response test"):
+                    ok, message = ollama_generate_smoke_test(model=model_name)
+                    if ok:
+                        st.success(f"Ollama responded: {message}")
+                    else:
+                        st.error(message)
+            else:
+                st.error("Ollama is not reachable. Start Ollama and pull llama3.2:3b.")
+            llm = OllamaLLM(model=model_name)
+        else:
+            st.warning("Using deterministic demo mode, not a real local LLM.")
+            llm = DeterministicCourseLLM()
 
         st.divider()
-        st.markdown("### Documents")
+        st.header("Documents")
         uploaded_files = st.file_uploader(
-            "Upload course materials",
+            "Upload PDF, PPTX, DOCX, TXT, or Markdown files",
             type=["pdf", "pptx", "docx", "txt", "md"],
             accept_multiple_files=True,
-            help="Supported: PDF, PPTX, DOCX, TXT, Markdown",
         )
-        if uploaded_files and st.button("Add uploaded files", type="primary", use_container_width=True):
+        if uploaded_files and st.button("Add uploaded files"):
             add_uploaded_files(uploaded_files)
 
-        col_a, col_b = st.columns(2)
-        with col_a:
-            if st.button("Load samples", use_container_width=True):
-                load_sample_documents()
-        with col_b:
-            if st.button("Build index", use_container_width=True):
-                build_index(st.session_state.get("active_llm", OllamaLLM(model=DEFAULT_MODEL)))
+        if st.button("Load sample course materials"):
+            load_sample_documents()
 
-        docs = st.session_state["uploaded_docs"]
-        if docs:
-            with st.expander(f"Uploaded documents ({len(docs)})", expanded=False):
-                for index, item in enumerate(list(docs)):
-                    st.markdown(f"**{item.filename}**")
-                    st.caption(f"{len(item.document.text.split())} words")
-                    if st.button("Remove", key=f"sidebar-remove-{index}"):
-                        st.session_state["uploaded_docs"].pop(index)
-                        _reset_index_state(delete_store=True)
-                        st.rerun()
-        else:
-            st.info("No documents uploaded yet.")
+        top_k = st.slider("Retrieved chunks", min_value=1, max_value=8, value=4)
+        st.session_state["top_k"] = top_k
+        relevance_threshold = st.slider(
+            "Evidence relevance threshold",
+            min_value=0.0,
+            max_value=0.8,
+            value=SEMANTIC_RELEVANCE_THRESHOLD,
+            step=0.01,
+            help=(
+                "Chunks below this calibrated similarity score are not used as evidence. "
+                "Raise it to be stricter; lower it if valid uploaded material is missed."
+            ),
+        )
+        st.session_state["relevance_threshold"] = relevance_threshold
+
+        if st.button("Build / refresh semantic index", type="primary"):
+            build_index(llm)
 
         doc_count = len(st.session_state["uploaded_docs"])
         chunk_count = len(st.session_state["chunks"])
         st.metric("Documents", doc_count)
-        st.metric("Chunks", chunk_count)
+        st.metric("Indexed chunks", chunk_count)
         assistant = st.session_state.get("assistant")
         if assistant is not None:
-            st.caption(f"Backend: `{getattr(assistant, 'retrieval_backend', 'unknown')}`")
-        else:
-            st.caption("Build the index before chatting.")
-
-        st.divider()
-        with st.expander("Advanced settings", expanded=False):
-            st.markdown("#### Model")
-            backend = st.radio("LLM backend", ["Ollama", "Deterministic demo"], index=0)
-            model_name = st.text_input("Ollama model", value=DEFAULT_MODEL)
-
-            if backend == "Ollama":
-                models = list_ollama_models()
-                if models:
-                    st.success("Ollama is reachable.")
-                    if model_name in models:
-                        st.info(f"Model available: {model_name}")
-                    else:
-                        st.warning(
-                            f"{model_name} is not installed. Available models: {', '.join(models)}"
-                        )
-                    if st.button("Run Ollama response test"):
-                        ok, message = ollama_generate_smoke_test(model=model_name)
-                        if ok:
-                            st.success(f"Ollama responded: {message}")
-                        else:
-                            st.error(message)
-                else:
-                    st.error("Ollama is not reachable. Start Ollama and pull llama3.2:3b.")
-                llm = OllamaLLM(model=model_name)
-            else:
-                st.warning("Using deterministic demo mode, not a real local LLM.")
-                llm = DeterministicCourseLLM()
-
-            st.markdown("#### Retrieval")
-            top_k = st.slider("Retrieved chunks", min_value=1, max_value=8, value=4)
-            st.session_state["top_k"] = top_k
-            relevance_threshold = st.slider(
-                "Evidence relevance threshold",
-                min_value=0.0,
-                max_value=0.8,
-                value=SEMANTIC_RELEVANCE_THRESHOLD,
-                step=0.01,
-                help=(
-                    "Chunks below this calibrated similarity score are not used as evidence. "
-                    "Raise it to be stricter; lower it if valid uploaded material is missed."
-                ),
-            )
-            st.session_state["relevance_threshold"] = relevance_threshold
+            st.caption(f"Retrieval backend: `{getattr(assistant, 'retrieval_backend', 'unknown')}`")
+        if st.session_state["assistant"] is None:
+            st.info("Add documents and build the semantic index before chatting.")
         return llm
 
 
@@ -338,8 +248,6 @@ def _reset_index_state(*, delete_store: bool) -> None:
 
 
 def render_chat_tab() -> None:
-    st.title("AI Chat")
-    st.caption("Ask questions about indexed course materials and inspect citations.")
     assistant = st.session_state.get("assistant")
     if assistant is None:
         st.info("Upload documents and build the semantic index to start chatting.")
@@ -401,8 +309,6 @@ def render_chat_tab() -> None:
 
 
 def render_comparison_tab() -> None:
-    st.title("RAG Comparison")
-    st.caption("Compare the same Ollama model with and without retrieved course context.")
     assistant = st.session_state.get("assistant")
     if assistant is None:
         st.info("Build an index before comparing RAG and no-RAG answers.")
@@ -455,8 +361,6 @@ def render_comparison_tab() -> None:
 
 
 def render_evaluation_tab() -> None:
-    st.title("Evaluation")
-    st.caption("Review automated estimates separately from human judgment.")
     assistant = st.session_state.get("assistant")
     if assistant is None:
         st.info("Build an index before running evaluation.")
@@ -548,6 +452,49 @@ def render_evaluation_tab() -> None:
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
         st.subheader("Latency")
         st.bar_chart(pd.DataFrame(rows), x="case_id", y="latency_seconds", color="mode")
+
+
+def render_documents_tab() -> None:
+    docs: list[UploadedDocument] = st.session_state["uploaded_docs"]
+    if not docs:
+        st.info("No documents loaded yet.")
+        return
+
+    st.subheader("Loaded documents")
+    for index, item in enumerate(list(docs)):
+        with st.expander(f"{item.filename} ({len(item.document.text.split())} words)"):
+            st.caption(f"Hash: {item.content_hash}")
+            st.text_area("Preview", item.document.text[:3000], height=180, key=f"preview-{index}")
+            if st.button("Remove document", key=f"remove-{index}"):
+                st.session_state["uploaded_docs"].pop(index)
+                _reset_index_state(delete_store=True)
+                st.rerun()
+
+    if st.button("Clear all documents"):
+        st.session_state["uploaded_docs"] = []
+        _reset_index_state(delete_store=True)
+        st.session_state["messages"] = []
+        st.rerun()
+
+    st.subheader("Indexed chunks")
+    chunks = st.session_state.get("chunks", [])
+    if chunks:
+        st.dataframe(
+            pd.DataFrame(
+                [
+                    {
+                        "chunk_id": chunk.chunk_id,
+                        "title": chunk.title,
+                        "source": chunk.source_path,
+                        "words": chunk.end_word - chunk.start_word,
+                    }
+                    for chunk in chunks
+                ]
+            ),
+            use_container_width=True,
+        )
+    else:
+        st.info("No chunks indexed yet. Build the semantic index after loading documents.")
 
 
 def render_sources(sources) -> None:
