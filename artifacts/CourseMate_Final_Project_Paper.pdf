@@ -1,0 +1,877 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R] /Count 8 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 2163 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(COURSEMATE: AN AI COURSE MATERIAL ASSISTANT USING RETRIEVAL-AUGMENTED) Tj
+T*
+(GENERATION) Tj
+T*
+() Tj
+T*
+(Team members: Manish Chowdary Kalluri, Sai Kiran Sikilammetla, Venkata) Tj
+T*
+(Naga Kiran Katari) Tj
+T*
+() Tj
+T*
+(ABSTRACT) Tj
+T*
+() Tj
+T*
+(CourseMate is an LLM-powered course material assistant that answers) Tj
+T*
+(student) Tj
+T*
+(questions using a retrieval-augmented generation \(RAG\) architecture. The) Tj
+T*
+(system) Tj
+T*
+(loads course documents, chunks them into passages, creates local TF-IDF) Tj
+T*
+(vector) Tj
+T*
+(representations, retrieves relevant passages for a user question, and) Tj
+T*
+(sends the) Tj
+T*
+(retrieved context to a language-model generation layer. CourseMate can) Tj
+T*
+(run with) Tj
+T*
+(a local Ollama model for a fully LLM-backed demonstration and includes a) Tj
+T*
+(deterministic local generator for reproducible evaluation. We evaluate) Tj
+T*
+(the) Tj
+T*
+(system against a no-retrieval baseline using six representative course) Tj
+T*
+(questions. Results show that RAG substantially improves source grounding) Tj
+T*
+(and) Tj
+T*
+(keyword coverage because the assistant has access to current course) Tj
+T*
+(materials) Tj
+T*
+(instead of relying only on model parameters.) Tj
+T*
+() Tj
+T*
+(1. INTRODUCTION AND PROBLEM STATEMENT) Tj
+T*
+() Tj
+T*
+(Students often need quick answers about lectures, assignments, project) Tj
+T*
+(requirements, policies, and technical concepts. Searching through slides) Tj
+T*
+(and) Tj
+T*
+(documents manually can be slow, especially when course materials are) Tj
+T*
+(spread) Tj
+T*
+(across multiple files. A general-purpose LLM can explain common) Tj
+T*
+(concepts, but it) Tj
+T*
+(may not know the exact content of a specific course and may hallucinate) Tj
+T*
+(project) Tj
+T*
+(requirements or deadlines.) Tj
+T*
+() Tj
+T*
+(The objective of CourseMate is to build a question-answering assistant) Tj
+T*
+(that) Tj
+T*
+(grounds answers in course materials. RAG is appropriate because it) Tj
+T*
+(separates) Tj
+T*
+(course knowledge from the language model: the model does not need to) Tj
+T*
+(memorize) Tj
+T*
+(every document, and the corpus can be updated without retraining.) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2122 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+() Tj
+T*
+(2. BACKGROUND AND RELATED WORK) Tj
+T*
+() Tj
+T*
+(Large language models generate text from learned statistical patterns.) Tj
+T*
+(They are) Tj
+T*
+(useful for explanation and synthesis, but they can produce unsupported) Tj
+T*
+(answers) Tj
+T*
+(when asked about private or recently updated information. Prompt) Tj
+T*
+(engineering can) Tj
+T*
+(reduce this risk by instructing the model to answer only from evidence,) Tj
+T*
+(but a) Tj
+T*
+(prompt alone cannot provide missing course-specific facts.) Tj
+T*
+() Tj
+T*
+(Retrieval-augmented generation addresses this limitation by retrieving) Tj
+T*
+(external) Tj
+T*
+(context before generation. The common RAG workflow is documents ->) Tj
+T*
+(chunking ->) Tj
+T*
+(embeddings or vectors -> vector store -> retrieval -> LLM -> response.) Tj
+T*
+(CourseMate implements this workflow with a local TF-IDF vector store.) Tj
+T*
+(TF-IDF is) Tj
+T*
+(not as semantically rich as neural embeddings, but it is transparent,) Tj
+T*
+(lightweight, reproducible, and sufficient for a small educational) Tj
+T*
+(corpus. The) Tj
+T*
+(generation layer supports Ollama, allowing open local models such as) Tj
+T*
+(Llama 3.2,) Tj
+T*
+(Mistral, or Phi to be used without commercial API access.) Tj
+T*
+() Tj
+T*
+(Relevant references include Lewis et al. \(2020\) on retrieval-augmented) Tj
+T*
+(generation, the Ollama documentation for local model serving, and) Tj
+T*
+(standard) Tj
+T*
+(information retrieval concepts such as term frequency-inverse document) Tj
+T*
+(frequency and cosine similarity.) Tj
+T*
+() Tj
+T*
+(3. SYSTEM ARCHITECTURE AND DESIGN) Tj
+T*
+() Tj
+T*
+(CourseMate contains five major components:) Tj
+T*
+() Tj
+T*
+(- Document loader: reads Markdown and text course materials.) Tj
+T*
+(- Chunker: splits documents into overlapping word chunks.) Tj
+T*
+(- Vector store: computes TF-IDF vectors and cosine similarity scores.) Tj
+T*
+(- Retriever: selects the top-k chunks for a user question.) Tj
+T*
+(- Generation layer: builds a grounded prompt and calls an LLM backend.) Tj
+T*
+() Tj
+T*
+(Architecture diagram:) Tj
+T*
+() Tj
+T*
+(```text) Tj
+T*
+(User Question) Tj
+T*
+(|) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 1530 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(v) Tj
+T*
+(CourseMate CLI / App Interface) Tj
+T*
+(|) Tj
+T*
+(v) Tj
+T*
+(TF-IDF Query Vector) Tj
+T*
+(|) Tj
+T*
+(v) Tj
+T*
+(Vector Store Search) Tj
+T*
+(|) Tj
+T*
+(v) Tj
+T*
+(Top-k Course Chunks + Source Metadata) Tj
+T*
+(|) Tj
+T*
+(v) Tj
+T*
+(Grounded Prompt Template) Tj
+T*
+(|) Tj
+T*
+(v) Tj
+T*
+(LLM Backend \(Ollama, OpenAI-compatible, or deterministic evaluator\)) Tj
+T*
+(|) Tj
+T*
+(v) Tj
+T*
+(Answer with Citations) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(The assistant also supports a no-RAG mode. In no-RAG mode, the same) Tj
+T*
+(generation) Tj
+T*
+(template is used but no retrieved course context is supplied. This) Tj
+T*
+(creates a) Tj
+T*
+(controlled baseline for evaluating the effect of retrieval.) Tj
+T*
+() Tj
+T*
+(4. DATA AND METHODOLOGY) Tj
+T*
+() Tj
+T*
+(The demonstration corpus consists of five course-material documents:) Tj
+T*
+() Tj
+T*
+(- Module 1: Large Language Model Basics) Tj
+T*
+(- Module 2: Retrieval-Augmented Generation) Tj
+T*
+(- Module 3: Agents and Tool Use) Tj
+T*
+(- Module 4: LLM Evaluation) Tj
+T*
+(- Course Policy Summary) Tj
+T*
+() Tj
+T*
+(These files represent lecture notes and project policy content. They) Tj
+T*
+(were) Tj
+T*
+(written as realistic sample materials for the final project) Tj
+T*
+(demonstration. The) Tj
+T*
+(system preprocesses the documents by loading Markdown, extracting) Tj
+T*
+(titles,) Tj
+T*
+(splitting text into overlapping chunks of 110 words with 25 words of) Tj
+T*
+(overlap,) Tj
+T*
+(tokenizing text, removing common stopwords, and computing TF-IDF) Tj
+T*
+(vectors.) Tj
+T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2070 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+() Tj
+T*
+(Prompt design:) Tj
+T*
+() Tj
+T*
+(- The system role tells the model it is CourseMate, a course-material) Tj
+T*
+(- assistant.) Tj
+T*
+(- The prompt includes retrieved context with source titles and) Tj
+T*
+(- similarity) Tj
+T*
+(scores.) Tj
+T*
+(- The instructions require concise student-friendly answers.) Tj
+T*
+(- The prompt explicitly says not to invent definitions, deadlines,) Tj
+T*
+(- formulas, or) Tj
+T*
+(policies when evidence is missing.) Tj
+T*
+() Tj
+T*
+(Model configuration:) Tj
+T*
+() Tj
+T*
+(- Recommended demo backend: Ollama with an open local model such as) Tj
+T*
+(llama3.2:3b.) Tj
+T*
+(- Reproducible evaluation backend: deterministic-course-generator.) Tj
+T*
+(- Optional hosted backend: OpenAI-compatible chat completions through) Tj
+T*
+(environment variables, without committing API keys.) Tj
+T*
+() Tj
+T*
+(5. IMPLEMENTATION) Tj
+T*
+() Tj
+T*
+(CourseMate is implemented in Python with no required third-party) Tj
+T*
+(dependencies.) Tj
+T*
+(The project structure is:) Tj
+T*
+() Tj
+T*
+(- `coursemate/documents.py`: document loading and title extraction.) Tj
+T*
+(- `coursemate/chunking.py`: overlapping chunk creation.) Tj
+T*
+(- `coursemate/vector_store.py`: TF-IDF vector construction and cosine) Tj
+T*
+(- search.) Tj
+T*
+(- `coursemate/llm.py`: generation adapters and grounded prompt) Tj
+T*
+(- construction.) Tj
+T*
+(- `coursemate/rag.py`: orchestration of retrieval and answering.) Tj
+T*
+(- `coursemate/evaluation.py`: evaluation cases, metrics, and result) Tj
+T*
+(- summaries.) Tj
+T*
+(- `coursemate/cli.py`: command-line interface for ask, compare, and) Tj
+T*
+(- evaluate.) Tj
+T*
+() Tj
+T*
+(Important technical decisions:) Tj
+T*
+() Tj
+T*
+(1. Local retrieval was implemented without external services so the) Tj
+T*
+(system can) Tj
+T*
+(run in limited student environments.) Tj
+T*
+(2. The LLM interface is abstracted so the same RAG system can use a) Tj
+T*
+(local open) Tj
+T*
+(model, a hosted compatible model, or the deterministic evaluator.) Tj
+T*
+(3. Source metadata is preserved in every chunk so answers can cite the) Tj
+T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 1848 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(material) Tj
+T*
+(used.) Tj
+T*
+(4. The evaluation compares RAG and no-RAG using the same questions and) Tj
+T*
+(model) Tj
+T*
+(backend, isolating retrieval as the experimental variable.) Tj
+T*
+() Tj
+T*
+(Challenges included balancing simplicity with realism. A production) Tj
+T*
+(system) Tj
+T*
+(would likely use neural embeddings and a persistent vector database. For) Tj
+T*
+(this) Tj
+T*
+(project, TF-IDF gives a clear, inspectable implementation while) Tj
+T*
+(preserving the) Tj
+T*
+(core RAG concepts.) Tj
+T*
+() Tj
+T*
+(6. EVALUATION AND RESULTS) Tj
+T*
+() Tj
+T*
+(The evaluation set contains six questions covering RAG architecture,) Tj
+T*
+(course) Tj
+T*
+(policy, hallucination prevention, evaluation metrics, and tool-use) Tj
+T*
+(safety. Each) Tj
+T*
+(case includes expected keywords and expected source documents.) Tj
+T*
+() Tj
+T*
+(Metrics:) Tj
+T*
+() Tj
+T*
+(- Keyword recall: fraction of expected keywords appearing in the answer.) Tj
+T*
+(- Source hit rate: fraction of expected source documents retrieved.) Tj
+T*
+(- Latency: time to answer each question.) Tj
+T*
+(- Qualitative review: inspection of successful and failed responses.) Tj
+T*
+() Tj
+T*
+(Example test case:) Tj
+T*
+() Tj
+T*
+(- Question: What are the main steps in a RAG pipeline?) Tj
+T*
+(- Expected source: Module 2: Retrieval-Augmented Generation) Tj
+T*
+(- Expected keywords: documents, chunks, vector, retrieve, LLM) Tj
+T*
+() Tj
+T*
+(Expected result pattern:) Tj
+T*
+() Tj
+T*
+(- No-RAG baseline: refuses or gives an incomplete answer because no) Tj
+T*
+(- context is) Tj
+T*
+(supplied.) Tj
+T*
+(- RAG system: retrieves Module 2 and answers with the document-to-chunk-) Tj
+T*
+(- to-vector) Tj
+T*
+(to-retrieval-to-LLM workflow.) Tj
+T*
+() Tj
+T*
+(The reproducible evaluation can be run with:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(python3 -m coursemate.cli evaluate) Tj
+T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 1832 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(```) Tj
+T*
+() Tj
+T*
+(In local testing with the deterministic backend, RAG improves both) Tj
+T*
+(source hit) Tj
+T*
+(rate and keyword recall over the no-RAG baseline. Exact results are) Tj
+T*
+(written to) Tj
+T*
+(`artifacts/evaluation_results.json` when the evaluation command is run.) Tj
+T*
+() Tj
+T*
+(7. SUCCESSFUL AND FAILED RESPONSES) Tj
+T*
+() Tj
+T*
+(Successful response example:) Tj
+T*
+() Tj
+T*
+(- Question: What should the final project submission include?) Tj
+T*
+(- Retrieval: Course Policy Summary.) Tj
+T*
+(- Result: The assistant identifies the paper, presentation slides,) Tj
+T*
+(- source code,) Tj
+T*
+(and demonstration requirements.) Tj
+T*
+() Tj
+T*
+(Another successful response:) Tj
+T*
+() Tj
+T*
+(- Question: What metrics are useful for evaluating a RAG assistant?) Tj
+T*
+(- Retrieval: Module 4: LLM Evaluation.) Tj
+T*
+(- Result: The assistant mentions retrieval source accuracy, keyword) Tj
+T*
+(- recall,) Tj
+T*
+(citation correctness, refusal accuracy, and latency.) Tj
+T*
+() Tj
+T*
+(Failure case:) Tj
+T*
+() Tj
+T*
+(- Question: Ask for a detail not present in the materials, such as the) Tj
+T*
+(- exact) Tj
+T*
+(classroom number for the final presentation.) Tj
+T*
+(- Expected behavior: The assistant should refuse or say the materials do) Tj
+T*
+(- not) Tj
+T*
+(contain enough evidence.) Tj
+T*
+(- Possible failure: A less constrained LLM may invent a room number. The) Tj
+T*
+(- prompt) Tj
+T*
+(and evaluation procedure are designed to detect this type of) Tj
+T*
+(hallucination.) Tj
+T*
+() Tj
+T*
+(Retrieval failure mode:) Tj
+T*
+() Tj
+T*
+(- If the user asks with vocabulary that does not overlap the course) Tj
+T*
+(- documents,) Tj
+T*
+(TF-IDF may retrieve weak context. Neural embeddings could improve) Tj
+T*
+(semantic) Tj
+T*
+(matching for paraphrased questions.) Tj
+T*
+() Tj
+T*
+(8. DISCUSSION) Tj
+T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 2048 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+() Tj
+T*
+(CourseMate demonstrates why RAG is useful for course-specific question) Tj
+T*
+(answering. The model does not need to know the course policy from) Tj
+T*
+(training; it) Tj
+T*
+(uses retrieved evidence. This makes the system more maintainable and) Tj
+T*
+(easier to) Tj
+T*
+(audit. The citations help students verify answers rather than blindly) Tj
+T*
+(trusting a) Tj
+T*
+(chatbot.) Tj
+T*
+() Tj
+T*
+(The project also shows limitations. TF-IDF retrieval works well when) Tj
+T*
+(questions) Tj
+T*
+(share vocabulary with the documents, but it is weaker for synonyms and) Tj
+T*
+(multi-hop questions. The deterministic generator is useful for) Tj
+T*
+(evaluation but) Tj
+T*
+(less fluent than a real LLM. Local open models may vary in speed and) Tj
+T*
+(answer) Tj
+T*
+(quality depending on hardware.) Tj
+T*
+() Tj
+T*
+(9. RESPONSIBLE AI AND SECURITY) Tj
+T*
+() Tj
+T*
+(CourseMate should not be treated as an authoritative replacement for the) Tj
+T*
+(instructor. It should show sources and encourage verification. The) Tj
+T*
+(system avoids) Tj
+T*
+(committing secrets and expects API keys to be provided through) Tj
+T*
+(environment) Tj
+T*
+(variables when hosted models are used. If real student data were added,) Tj
+T*
+(privacy) Tj
+T*
+(controls would be required, including access control, data minimization,) Tj
+T*
+(audit) Tj
+T*
+(logs, and removal of sensitive information from prompts.) Tj
+T*
+() Tj
+T*
+(Risks and safeguards:) Tj
+T*
+() Tj
+T*
+(- Hallucination: mitigated by retrieval, source citations, and refusal) Tj
+T*
+(instructions.) Tj
+T*
+(- Privacy leakage: avoid uploading private course or student data to) Tj
+T*
+(- unapproved) Tj
+T*
+(hosted models.) Tj
+T*
+(- Prompt injection: future versions should filter retrieved content and) Tj
+T*
+(- separate) Tj
+T*
+(trusted system instructions from untrusted documents.) Tj
+T*
+(- Overreliance: the interface should tell students to verify important) Tj
+T*
+(- policy) Tj
+T*
+(answers against official course materials.) Tj
+T*
+() Tj
+T*
+(10. CONCLUSION AND FUTURE WORK) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 1410 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+14 TL
+(CourseMate is a working RAG application that answers course-material) Tj
+T*
+(questions,) Tj
+T*
+(compares RAG with a no-RAG baseline, and includes evaluation code and) Tj
+T*
+(test) Tj
+T*
+(cases. The main finding is that retrieval improves grounding because) Tj
+T*
+(answers) Tj
+T*
+(are based on the current course corpus rather than only the language) Tj
+T*
+(model's) Tj
+T*
+(parameters.) Tj
+T*
+() Tj
+T*
+(Future improvements include replacing TF-IDF with neural embeddings,) Tj
+T*
+(adding a) Tj
+T*
+(web interface, supporting PDF slide ingestion, adding instructor-managed) Tj
+T*
+(document uploads, evaluating multiple open local models, and) Tj
+T*
+(implementing) Tj
+T*
+(stronger prompt-injection defenses.) Tj
+T*
+() Tj
+T*
+(11. REFERENCES) Tj
+T*
+() Tj
+T*
+(- Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal,) Tj
+T*
+(- N.,) Tj
+T*
+(Kuttler, H., Lewis, M., Yih, W., Rocktaschel, T., Riedel, S., and Kiela,) Tj
+T*
+(D.) Tj
+T*
+(Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.) Tj
+T*
+(NeurIPS,) Tj
+T*
+(2020.) Tj
+T*
+(- Ollama documentation. https://ollama.com/) Tj
+T*
+(- Manning, C. D., Raghavan, P., and Schutze, H. Introduction to) Tj
+T*
+(- Information) Tj
+T*
+(Retrieval. Cambridge University Press, 2008.) Tj
+T*
+(- OpenAI API documentation. https://platform.openai.com/docs/) Tj
+T*
+(- Course final project prompt supplied for this assignment.) Tj
+T*
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000162 00000 n 
+0000000232 00000 n 
+0000002447 00000 n 
+0000002573 00000 n 
+0000004747 00000 n 
+0000004873 00000 n 
+0000006455 00000 n 
+0000006581 00000 n 
+0000008704 00000 n 
+0000008832 00000 n 
+0000010733 00000 n 
+0000010861 00000 n 
+0000012746 00000 n 
+0000012874 00000 n 
+0000014975 00000 n 
+0000015103 00000 n 
+0000016566 00000 n 
+trailer
+<< /Size 20 /Root 1 0 R >>
+startxref
+16694
+%%EOF
