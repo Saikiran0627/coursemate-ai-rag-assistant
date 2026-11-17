@@ -1,4 +1,4 @@
-# CourseMate - AI Course Material Assistant
+# CourseMate – AI Course Material Assistant
 
 CourseMate is an interactive Retrieval-Augmented Generation (RAG) web
 application for course materials. It lets students upload documents, ask
