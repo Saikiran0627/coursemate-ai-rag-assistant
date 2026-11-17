@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import re
+import shutil
 import tempfile
 import uuid
-import re
 from pathlib import Path
 
 import pandas as pd
@@ -139,7 +140,7 @@ def render_sidebar():
         st.metric("Indexed chunks", chunk_count)
         assistant = st.session_state.get("assistant")
         if assistant is not None:
-            st.caption(f"Retrieval backend: `{assistant.retrieval_backend}`")
+            st.caption(f"Retrieval backend: `{getattr(assistant, 'retrieval_backend', 'unknown')}`")
         if st.session_state["assistant"] is None:
             st.info("Add documents and build the semantic index before chatting.")
         return llm
@@ -192,12 +193,7 @@ def build_index(llm) -> None:
     persist_dir = Path(tempfile.gettempdir()) / "coursemate_chroma" / st.session_state["session_id"]
     with st.spinner("Embedding documents and building ChromaDB index..."):
         try:
-            result = build_semantic_assistant(
-                docs,
-                llm,
-                persist_dir=persist_dir,
-                relevance_threshold=st.session_state["relevance_threshold"],
-            )
+            result = _build_index_with_retry(docs, llm, persist_dir)
         except Exception as exc:
             st.error(f"Could not build semantic index: {exc}")
             return
@@ -211,6 +207,26 @@ def attach_llm(llm) -> None:
     assistant = st.session_state.get("assistant")
     if assistant is not None:
         assistant.llm = llm
+
+
+def _build_index_with_retry(docs, llm, persist_dir: Path):
+    try:
+        return build_semantic_assistant(
+            docs,
+            llm,
+            persist_dir=persist_dir,
+            relevance_threshold=st.session_state["relevance_threshold"],
+        )
+    except Exception as exc:
+        if "no such table: tenants" not in str(exc).lower():
+            raise
+        shutil.rmtree(persist_dir, ignore_errors=True)
+        return build_semantic_assistant(
+            docs,
+            llm,
+            persist_dir=persist_dir,
+            relevance_threshold=st.session_state["relevance_threshold"],
+        )
 
 
 def render_chat_tab() -> None:
